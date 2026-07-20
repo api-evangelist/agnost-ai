@@ -1,0 +1,49 @@
+generated: '2026-07-18'
+method: searched
+source: openapi/agnost-ai-openapi-original.yml
+docs: https://docs.agnost.ai/authentication
+summary:
+  types:
+  - apiKey
+  - http
+  api_key_in:
+  - header
+  models:
+  - name: SDK ingestion
+    endpoints: /api/v1/*
+    credential: x-org-id header (organization UUID; public routing identifier, not a secret)
+  - name: Dashboard/API (JWT)
+    credential: 'Authorization: Bearer <jwt> + x-org-id'
+    use: browser/dashboard access after Google OAuth login
+  - name: Dashboard/API (API key)
+    credential: x-api-key (agnost_<64-hex>) + optional x-org-id
+    use: programmatic dashboard/API access; issued from Settings -> API Keys
+  - name: OpenTelemetry ingestion
+    endpoint: https://otel.agnost.ai/v1/traces
+    credential: 'OTEL_EXPORTER_OTLP_HEADERS=X-Agnost-Org-ID=<org-id>'
+  - name: MCP server
+    endpoint: https://mcp.agnost.ai/mcp
+    credential: OAuth 2.1 (dynamic client registration, Google identity)
+schemes:
+- name: OrgId
+  type: apiKey
+  in: header
+  parameter: x-org-id
+  description: Organization ID (UUID). Used by SDKs for event ingestion. Header is case-insensitive.
+  sources:
+  - openapi/agnost-ai-openapi-original.yml
+- name: BearerAuth
+  type: http
+  scheme: bearer
+  bearerFormat: JWT
+  description: JWT token from OAuth login.
+  sources:
+  - openapi/agnost-ai-openapi-original.yml
+- name: ApiKey
+  type: apiKey
+  in: header
+  parameter: x-api-key
+  description: API key (`agnost_<64-hex>`) for programmatic dashboard access. Issued via Settings
+    → API Keys.
+  sources:
+  - openapi/agnost-ai-openapi-original.yml
