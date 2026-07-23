@@ -1,0 +1,20 @@
+generated: '2026-07-18'
+method: generated
+skills:
+- file: agnost-ai-published.md
+  name: Agnost AI integration skill (provider-published)
+  method: searched
+  source: https://github.com/AgnostAI/skills (skills/agnost-ai/SKILL.md)
+  api: openapi/agnost-ai-openapi-original.yml
+  operations: [captureSession, captureEvent]
+  notes: Verbatim copy of the provider's published Agnost AI instrumentation skill.
+- file: agnost-ai-capture-conversation.md
+  name: Capture an agent conversation into Agnost
+  method: generated
+  api: openapi/agnost-ai-openapi-original.yml
+  operations: [captureSession, captureEvent]
+- file: agnost-ai-triage-failures.md
+  name: Triage agent failures in Agnost
+  method: generated
+  api: openapi/agnost-ai-openapi-original.yml
+  operations: [getErrors, getToolErrorDistribution, getSOPViolations, summarizeIntentDistribution, spotlightSearch, getConversationDetail]

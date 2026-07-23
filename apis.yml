@@ -1,22 +1,352 @@
 aid: agnost-ai
-name: Agnost Ai
-description: Agnost Ai is a company surfaced as a portfolio company of y-combinator and added to the API
-  Evangelist network as a stub for enrichment. This profile is a lead awaiting the enrichment pipeline.
+name: Agnost AI
+description: >-
+  Agnost AI is a production monitoring and product-analytics platform for teams
+  building chat and voice AI agents. It continuously reads production agent
+  conversations, MCP tool calls, and OpenTelemetry traces, clusters recurring
+  intents, feature requests, frustration, and failure patterns, and catches
+  agent failures that offline evals miss. It then turns the highest-impact
+  patterns into reviewed fixes, including pull requests against prompts, tools,
+  and agent harnesses. Agnost is OpenTelemetry-native, works with any LLM and
+  framework, and ships SDKs for Python and TypeScript conversation tracking,
+  MCP-server analytics (Python, TypeScript, Go), plus a hosted OAuth-protected
+  MCP server for querying your dashboard from Claude Desktop, Cursor, and any MCP
+  client. Founded in 2025 and part of Y Combinator's Summer 2026 (S26) batch.
 url: https://raw.githubusercontent.com/api-evangelist/agnost-ai/refs/heads/main/apis.yml
 x-type: company
 x-source: vc-portfolio
 x-backed-by:
 - y-combinator
-x-tier: stub
-x-tier-reason: portfolio-lead
+x-tier: profiled
+x-tier-reason: enrichment-pipeline
+accessModel:
+  pricing: unknown
+  onboarding: self-serve
+  trial: false
+  try_now: false
+  public: false
+  label: Self-serve signup
+  confidence: medium
+  source:
+  - authentication
+  generated: '2026-07-22'
+  method: derived
+image: https://agnost.ai/logo.png
 specificationVersion: '0.20'
 created: '2026-07-17'
-modified: '2026-07-17'
+modified: '2026-07-18'
 tags:
 - Company
-apis: []
+- AI Agents
+- Agent Analytics
+- Observability
+- OpenTelemetry
+- Model Context Protocol
+- Conversational AI
+- Monitoring
+- Developer Tools
+- Analytics
+apis:
+- aid: agnost-ai:agnost-ai-alerts-api
+  name: Agnost AI Alerts API
+  description: Alert configuration and monitoring
+  humanURL: https://docs.agnost.ai
+  baseURL: https://api.agnost.ai
+  tags:
+  - Alerts
+  properties:
+  - type: OpenAPI
+    url: openapi/agnost-ai-alerts-api-openapi.yml
+  - type: Documentation
+    url: https://docs.agnost.ai
+  - type: APIReference
+    url: https://docs.agnost.ai/openapi.yaml
+  - type: ErrorCatalog
+    url: https://docs.agnost.ai/errors
+- aid: agnost-ai:agnost-ai-api-keys-api
+  name: Agnost AI API Keys API
+  description: API key management
+  humanURL: https://docs.agnost.ai
+  baseURL: https://api.agnost.ai
+  tags:
+  - API Keys
+  properties:
+  - type: OpenAPI
+    url: openapi/agnost-ai-api-keys-api-openapi.yml
+  - type: Documentation
+    url: https://docs.agnost.ai
+  - type: APIReference
+    url: https://docs.agnost.ai/openapi.yaml
+  - type: ErrorCatalog
+    url: https://docs.agnost.ai/errors
+- aid: agnost-ai:agnost-ai-auth-api
+  name: Agnost AI Auth API
+  description: OAuth authentication callbacks
+  humanURL: https://docs.agnost.ai
+  baseURL: https://api.agnost.ai
+  tags:
+  - Auth
+  properties:
+  - type: OpenAPI
+    url: openapi/agnost-ai-auth-api-openapi.yml
+  - type: Documentation
+    url: https://docs.agnost.ai
+  - type: APIReference
+    url: https://docs.agnost.ai/openapi.yaml
+  - type: ErrorCatalog
+    url: https://docs.agnost.ai/errors
+- aid: agnost-ai:agnost-ai-billing-api
+  name: Agnost AI Billing API
+  description: Stripe billing management
+  humanURL: https://docs.agnost.ai
+  baseURL: https://api.agnost.ai
+  tags:
+  - Billing
+  properties:
+  - type: OpenAPI
+    url: openapi/agnost-ai-billing-api-openapi.yml
+  - type: Documentation
+    url: https://docs.agnost.ai
+  - type: APIReference
+    url: https://docs.agnost.ai/openapi.yaml
+  - type: ErrorCatalog
+    url: https://docs.agnost.ai/errors
+- aid: agnost-ai:agnost-ai-classification-api
+  name: Agnost AI Classification API
+  description: LLM-based classification operations
+  humanURL: https://docs.agnost.ai
+  baseURL: https://api.agnost.ai
+  tags:
+  - Classification
+  properties:
+  - type: OpenAPI
+    url: openapi/agnost-ai-classification-api-openapi.yml
+  - type: Documentation
+    url: https://docs.agnost.ai
+  - type: APIReference
+    url: https://docs.agnost.ai/openapi.yaml
+  - type: ErrorCatalog
+    url: https://docs.agnost.ai/errors
+- aid: agnost-ai:agnost-ai-connections-api
+  name: Agnost AI Connections API
+  description: External integrations (Slack)
+  humanURL: https://docs.agnost.ai
+  baseURL: https://api.agnost.ai
+  tags:
+  - Connections
+  properties:
+  - type: OpenAPI
+    url: openapi/agnost-ai-connections-api-openapi.yml
+  - type: Documentation
+    url: https://docs.agnost.ai
+  - type: APIReference
+    url: https://docs.agnost.ai/openapi.yaml
+  - type: ErrorCatalog
+    url: https://docs.agnost.ai/errors
+- aid: agnost-ai:agnost-ai-conversations-api
+  name: Agnost AI Conversations API
+  description: Conversation message and span retrieval
+  humanURL: https://docs.agnost.ai
+  baseURL: https://api.agnost.ai
+  tags:
+  - Conversations
+  properties:
+  - type: OpenAPI
+    url: openapi/agnost-ai-conversations-api-openapi.yml
+  - type: Documentation
+    url: https://docs.agnost.ai
+  - type: APIReference
+    url: https://docs.agnost.ai/openapi.yaml
+  - type: ErrorCatalog
+    url: https://docs.agnost.ai/errors
+- aid: agnost-ai:agnost-ai-dashboard-api
+  name: Agnost AI Dashboard API
+  description: Analytics and metrics for the dashboard
+  humanURL: https://docs.agnost.ai
+  baseURL: https://api.agnost.ai
+  tags:
+  - Dashboard
+  properties:
+  - type: OpenAPI
+    url: openapi/agnost-ai-dashboard-api-openapi.yml
+  - type: Documentation
+    url: https://docs.agnost.ai
+  - type: APIReference
+    url: https://docs.agnost.ai/openapi.yaml
+  - type: ErrorCatalog
+    url: https://docs.agnost.ai/errors
+- aid: agnost-ai:agnost-ai-onboarding-api
+  name: Agnost AI Onboarding API
+  description: First-run helpers used during organization setup
+  humanURL: https://docs.agnost.ai
+  baseURL: https://api.agnost.ai
+  tags:
+  - Onboarding
+  properties:
+  - type: OpenAPI
+    url: openapi/agnost-ai-onboarding-api-openapi.yml
+  - type: Documentation
+    url: https://docs.agnost.ai
+  - type: APIReference
+    url: https://docs.agnost.ai/openapi.yaml
+  - type: ErrorCatalog
+    url: https://docs.agnost.ai/errors
+- aid: agnost-ai:agnost-ai-organizations-api
+  name: Agnost AI Organizations API
+  description: Organization management
+  humanURL: https://docs.agnost.ai
+  baseURL: https://api.agnost.ai
+  tags:
+  - Organizations
+  properties:
+  - type: OpenAPI
+    url: openapi/agnost-ai-organizations-api-openapi.yml
+  - type: Documentation
+    url: https://docs.agnost.ai
+  - type: APIReference
+    url: https://docs.agnost.ai/openapi.yaml
+  - type: ErrorCatalog
+    url: https://docs.agnost.ai/errors
+- aid: agnost-ai:agnost-ai-sdk-api
+  name: Agnost AI SDK API
+  description: Event ingestion endpoints used by SDKs
+  humanURL: https://docs.agnost.ai
+  baseURL: https://api.agnost.ai
+  tags:
+  - SDK
+  properties:
+  - type: OpenAPI
+    url: openapi/agnost-ai-sdk-api-openapi.yml
+  - type: Documentation
+    url: https://docs.agnost.ai
+  - type: APIReference
+    url: https://docs.agnost.ai/openapi.yaml
+  - type: ErrorCatalog
+    url: https://docs.agnost.ai/errors
+- aid: agnost-ai:agnost-ai-sentiments-api
+  name: Agnost AI Sentiments API
+  description: Sentiment and intent analysis
+  humanURL: https://docs.agnost.ai
+  baseURL: https://api.agnost.ai
+  tags:
+  - Sentiments
+  properties:
+  - type: OpenAPI
+    url: openapi/agnost-ai-sentiments-api-openapi.yml
+  - type: Documentation
+    url: https://docs.agnost.ai
+  - type: APIReference
+    url: https://docs.agnost.ai/openapi.yaml
+  - type: ErrorCatalog
+    url: https://docs.agnost.ai/errors
+- aid: agnost-ai:agnost-ai-sops-api
+  name: Agnost AI SOPs API
+  description: Standard Operating Procedures
+  humanURL: https://docs.agnost.ai
+  baseURL: https://api.agnost.ai
+  tags:
+  - SOPs
+  properties:
+  - type: OpenAPI
+    url: openapi/agnost-ai-sops-api-openapi.yml
+  - type: Documentation
+    url: https://docs.agnost.ai
+  - type: APIReference
+    url: https://docs.agnost.ai/openapi.yaml
+  - type: ErrorCatalog
+    url: https://docs.agnost.ai/errors
+- aid: agnost-ai:agnost-ai-system-api
+  name: Agnost AI System API
+  description: Health checks, webhooks, internal endpoints
+  humanURL: https://docs.agnost.ai
+  baseURL: https://api.agnost.ai
+  tags:
+  - System
+  properties:
+  - type: OpenAPI
+    url: openapi/agnost-ai-system-api-openapi.yml
+  - type: Documentation
+    url: https://docs.agnost.ai
+  - type: APIReference
+    url: https://docs.agnost.ai/openapi.yaml
+  - type: ErrorCatalog
+    url: https://docs.agnost.ai/errors
+common:
+- url: https://docs.agnost.ai
+  type: DeveloperPortal
+- url: https://docs.agnost.ai
+  type: Documentation
+- url: https://docs.agnost.ai/openapi.yaml
+  type: APIReference
+- url: https://docs.agnost.ai/quickstart
+  type: GettingStarted
+- url: https://docs.agnost.ai/sdks
+  type: SDKs
+- url: https://agnost.ai/blog
+  type: Blog
+- url: https://docs.agnost.ai/roadmap
+  type: Roadmap
+- url: https://github.com/agnostai
+  type: GitHubOrganization
+- url: https://status.agnost.ai
+  type: StatusPage
+- url: https://call.agnost.ai
+  type: Support
+- url: https://agnost.ai/
+  type: Pricing
+- url: https://app.agnost.ai
+  type: SignUp
+- url: https://agnost.ai/terms
+  type: TermsOfService
+- url: https://trust.agnost.ai
+  type: Compliance
+- url: https://mcp.agnost.ai/mcp
+  type: MCPServer
+  name: Agnost MCP Server
+  description: >-
+    Hosted, OAuth 2.1-protected MCP server (streamable-HTTP) for querying your
+    Agnost dashboard from Claude Desktop, Cursor, and any MCP client.
+- url: packages/agnost-ai-packages.yml
+  type: Packages
+- url: packages/agnost-ai-packages.yml
+  type: SDKs
+- url: mcp/agnost-ai-mcp.yml
+  type: MCPServer
+- url: well-known/agnost-ai-well-known.yml
+  type: WellKnown
+- url: llms/agnost-ai-llms.txt
+  type: LLMsTxt
+- url: authentication/agnost-ai-authentication.yml
+  type: Authentication
+- url: scopes/agnost-ai-scopes.yml
+  type: OAuthScopes
+- url: conformance/agnost-ai-conformance.yml
+  type: Conformance
+- url: errors/agnost-ai-problem-types.yml
+  type: ErrorCatalog
+- url: lifecycle/agnost-ai-lifecycle.yml
+  type: Lifecycle
+- url: conventions/agnost-ai-conventions.yml
+  type: Conventions
+- url: data-model/agnost-ai-data-model.yml
+  type: DataModel
+- url: security/agnost-ai-domain-security.yml
+  type: DomainSecurity
+- url: security/agnost-ai-trust-center.yml
+  type: TrustCenter
+- url: skills/agnost-ai-published.md
+  type: AgentSkill
+  name: Agnost AI integration skill (provider-published)
+- url: skills/_index.yml
+  type: AgentSkill
+  name: Agnost AI agent skills
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
+x-enrichment:
+  date: '2026-07-19'
+  status: backfilled
+  pass: local-v1
+  note: backfilled from .gitignore signal + verified work evidence

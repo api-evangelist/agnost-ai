@@ -1,0 +1,37 @@
+generated: '2026-07-18'
+method: searched
+source: openapi/agnost-ai-openapi-original.yml + https://docs.agnost.ai + https://trust.agnost.ai
+standards:
+- id: openapi-3.0
+  conforms: true
+  evidence: openapi 3.0.3 spec published at https://docs.agnost.ai/openapi.yaml
+- id: opentelemetry
+  conforms: true
+  evidence: OTLP trace ingestion at https://otel.agnost.ai/v1/traces; OpenTelemetry-native, OpenInference/OpenLit compatible.
+- id: model-context-protocol
+  conforms: true
+  evidence: hosted streamable-HTTP MCP server at https://mcp.agnost.ai/mcp; SDKs instrument MCP tool calls.
+- id: oauth2.1
+  conforms: true
+  evidence: MCP server implements OAuth 2.1 with PKCE (S256) + RFC 7591 dynamic client registration.
+- id: rfc8414-oauth-as-metadata
+  conforms: true
+  evidence: /.well-known/oauth-authorization-server published on mcp.agnost.ai.
+- id: rfc9728-protected-resource-metadata
+  conforms: true
+  evidence: /.well-known/oauth-protected-resource published on mcp.agnost.ai.
+- id: soc2-type1
+  conforms: true
+  evidence: Trust Center (Comp AI) marks SOC 2 Type 1 as Compliant.
+- id: soc2-type2
+  conforms: false
+  evidence: Trust Center marks SOC 2 Type 2 as In progress.
+- id: iso-27001
+  conforms: false
+  evidence: Appears as a tracked framework on the Trust Center, not stated as achieved certification.
+- id: rfc9457-problem-details
+  conforms: false
+  evidence: errors use a simple {"error":"string"} body, not application/problem+json.
+- id: rfc9116-security-txt
+  conforms: false
+  evidence: /.well-known/security.txt returns 404.

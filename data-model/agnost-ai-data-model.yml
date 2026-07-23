@@ -1,0 +1,82 @@
+generated: '2026-07-18'
+method: derived
+source: openapi/agnost-ai-openapi-original.yml
+# Derived from OpenAPI components.schemas + path/operation resources. The
+# Organization is the tenant root; nearly every resource is scoped to it via
+# x-org-id. Ingested Sessions and Events feed the analytics resources
+# (conversations, sentiments/intents, SOP violations, tool stats).
+entities:
+- name: Organization
+  schema: Organization
+  root: true
+  scope_key: x-org-id (UUID)
+- name: Member
+  belongs_to: Organization
+  via: organization id
+- name: APIKey
+  schema: APIKeyRecord
+  belongs_to: Organization
+  id_format: agnost_<64-hex>
+- name: Session
+  ingested: true
+  belongs_to: Organization
+  via: x-org-id
+  notes: Started by captureSession; groups a conversation's events.
+- name: Event
+  ingested: true
+  belongs_to: Session
+  via: session_id
+  notes: One turn-pair or tool call recorded by captureEvent / OTel trace.
+- name: Conversation
+  derived_from: [Session, Event]
+  belongs_to: Organization
+- name: Alert
+  schema: AlertConfig
+  belongs_to: Organization
+- name: SOP
+  schema: SOPConfig
+  belongs_to: Organization
+  notes: Standard Operating Procedure; violations computed against Events.
+- name: Sentiment
+  schema: SentimentConfig
+  belongs_to: Organization
+  notes: Sentiment/intent tags applied to conversation messages.
+- name: DashboardChart
+  belongs_to: Organization
+- name: Connection
+  belongs_to: Organization
+  notes: External integration (Slack).
+relationships:
+- from: Member
+  to: Organization
+  kind: belongs_to
+  via: organization id
+- from: APIKey
+  to: Organization
+  kind: belongs_to
+- from: Session
+  to: Organization
+  kind: belongs_to
+  via: x-org-id
+- from: Event
+  to: Session
+  kind: belongs_to
+  via: session_id
+- from: Alert
+  to: Organization
+  kind: belongs_to
+- from: SOP
+  to: Organization
+  kind: belongs_to
+- from: Sentiment
+  to: Organization
+  kind: belongs_to
+- from: Connection
+  to: Organization
+  kind: belongs_to
+- from: Organization
+  to: Session
+  kind: has_many
+- from: Session
+  to: Event
+  kind: has_many

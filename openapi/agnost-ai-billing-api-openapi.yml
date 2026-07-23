@@ -1,0 +1,100 @@
+openapi: 3.0.3
+info:
+  title: Agnost AI Alerts Billing API
+  description: 'Complete REST API for Agnost AI: an analytics and monitoring platform for AI agents.
+
+
+    **Authentication**:
+
+    - SDK ingestion endpoints (`/api/v1/*`) use `x-org-id` header (UUID)
+
+    - Dashboard endpoints use `Authorization: Bearer <jwt>` + `x-org-id` header, or `x-api-key` header
+
+    - API key management uses JWT only (no API key auth)
+
+    '
+  version: 2.1.2
+  contact:
+    name: Agnost AI
+    url: https://agnost.ai
+servers:
+- url: https://api.agnost.ai
+  description: Production
+tags:
+- name: Billing
+  description: Stripe billing management
+paths:
+  /dashboard/api/billing/create-checkout:
+    post:
+      tags:
+      - Billing
+      summary: Create Stripe checkout session
+      operationId: createCheckoutSession
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      responses:
+        '200':
+          description: Stripe checkout URL
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url:
+                    type: string
+                    format: uri
+  /dashboard/api/billing/create-portal:
+    post:
+      tags:
+      - Billing
+      summary: Create Stripe billing portal session
+      operationId: createPortalSession
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      responses:
+        '200':
+          description: Stripe portal URL
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url:
+                    type: string
+                    format: uri
+  /dashboard/api/billing/cancel:
+    post:
+      tags:
+      - Billing
+      summary: Cancel subscription
+      operationId: cancelSubscription
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      responses:
+        '200':
+          description: Subscription cancelled
+components:
+  securitySchemes:
+    OrgId:
+      type: apiKey
+      in: header
+      name: x-org-id
+      description: Organization ID (UUID). Used by SDKs for event ingestion. Header is case-insensitive.
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token from OAuth login.
+    ApiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: API key (`agnost_<64-hex>`) for programmatic dashboard access. Issued via Settings → API Keys.
+    OrgScope:
+      type: apiKey
+      in: header
+      name: x-org-id
+      description: Optional. Selects which organization a JWT- or API-key-authenticated request targets when the credential has access to multiple.

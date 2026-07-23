@@ -1,0 +1,128 @@
+openapi: 3.0.3
+info:
+  title: Agnost AI Alerts API Keys API
+  description: 'Complete REST API for Agnost AI: an analytics and monitoring platform for AI agents.
+
+
+    **Authentication**:
+
+    - SDK ingestion endpoints (`/api/v1/*`) use `x-org-id` header (UUID)
+
+    - Dashboard endpoints use `Authorization: Bearer <jwt>` + `x-org-id` header, or `x-api-key` header
+
+    - API key management uses JWT only (no API key auth)
+
+    '
+  version: 2.1.2
+  contact:
+    name: Agnost AI
+    url: https://agnost.ai
+servers:
+- url: https://api.agnost.ai
+  description: Production
+tags:
+- name: API Keys
+  description: API key management
+paths:
+  /dashboard/api/organization/api-keys:
+    get:
+      tags:
+      - API Keys
+      summary: List API keys
+      operationId: listAPIKeys
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: List of API keys (hashes, not raw keys)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  api_keys:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/APIKeyRecord'
+    post:
+      tags:
+      - API Keys
+      summary: Create API key
+      operationId: createAPIKey
+      security:
+      - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              properties:
+                name:
+                  type: string
+      responses:
+        '201':
+          description: API key created (raw key returned ONCE)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  api_key:
+                    type: string
+                    description: Raw API key. Store securely, shown only once
+  /dashboard/api/organization/api-keys/{id}:
+    delete:
+      tags:
+      - API Keys
+      summary: Delete API key
+      operationId: deleteAPIKey
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: API key deleted
+components:
+  schemas:
+    APIKeyRecord:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        created_by:
+          type: string
+  securitySchemes:
+    OrgId:
+      type: apiKey
+      in: header
+      name: x-org-id
+      description: Organization ID (UUID). Used by SDKs for event ingestion. Header is case-insensitive.
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token from OAuth login.
+    ApiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: API key (`agnost_<64-hex>`) for programmatic dashboard access. Issued via Settings → API Keys.
+    OrgScope:
+      type: apiKey
+      in: header
+      name: x-org-id
+      description: Optional. Selects which organization a JWT- or API-key-authenticated request targets when the credential has access to multiple.

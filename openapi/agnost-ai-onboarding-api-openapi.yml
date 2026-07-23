@@ -1,0 +1,160 @@
+openapi: 3.0.3
+info:
+  title: Agnost AI Alerts Onboarding API
+  description: 'Complete REST API for Agnost AI: an analytics and monitoring platform for AI agents.
+
+
+    **Authentication**:
+
+    - SDK ingestion endpoints (`/api/v1/*`) use `x-org-id` header (UUID)
+
+    - Dashboard endpoints use `Authorization: Bearer <jwt>` + `x-org-id` header, or `x-api-key` header
+
+    - API key management uses JWT only (no API key auth)
+
+    '
+  version: 2.1.2
+  contact:
+    name: Agnost AI
+    url: https://agnost.ai
+servers:
+- url: https://api.agnost.ai
+  description: Production
+tags:
+- name: Onboarding
+  description: First-run helpers used during organization setup
+paths:
+  /dashboard/api/onboarding/describe-product:
+    post:
+      tags:
+      - Onboarding
+      summary: Stream an LLM-generated product description from a website
+      description: 'Fetches the user''s website (either a URL passed directly or inferred
+
+        from a corporate email domain) and streams a 2-3 sentence product
+
+        description over Server-Sent Events. Used during organization setup
+
+        so the user does not have to write the description by hand.
+
+
+        Returns 422 if the email domain is a free email provider, the site
+
+        cannot be reached, or extraction yielded too little content. The
+
+        client should ask the user to describe the product manually in those
+
+        cases.
+
+
+        Response is `text/event-stream`. Each event is a JSON object:
+
+        `{"text": "..."}` for incremental tokens, `{"error": "..."}` for
+
+        terminal failure. The stream ends with a `[DONE]` sentinel.
+
+        '
+      operationId: onboardingDescribeProduct
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  description: Website URL (preferred). Either url or email is required.
+                email:
+                  type: string
+                  format: email
+                  description: Falls back to the email's domain if url is not provided.
+      responses:
+        '200':
+          description: Server-Sent Events stream of description tokens
+          content:
+            text/event-stream:
+              schema:
+                type: string
+        '422':
+          description: Personal email, unreachable site, or insufficient content
+  /dashboard/api/onboarding/suggest-intents:
+    post:
+      tags:
+      - Onboarding
+      summary: Suggest 6 intents to track for a given product
+      description: 'Given a product description, returns exactly 6 suggested intents
+
+        (title + description pairs) that mix bug reports, frustration signals,
+
+        feature requests, churn signals, and positive signals. Always includes
+
+        two general-purpose intents ("Bug report", "Feature request") plus
+
+        4 product-specific suggestions. Used during organization setup to
+
+        seed the intent list.
+
+
+        `product_description` is capped at 5000 characters server-side.
+
+        '
+      operationId: onboardingSuggestIntents
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - product_description
+              properties:
+                product_description:
+                  type: string
+                  maxLength: 5000
+      responses:
+        '200':
+          description: Suggested intents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required:
+                  - title
+                  - description
+                  properties:
+                    title:
+                      type: string
+                    description:
+                      type: string
+components:
+  securitySchemes:
+    OrgId:
+      type: apiKey
+      in: header
+      name: x-org-id
+      description: Organization ID (UUID). Used by SDKs for event ingestion. Header is case-insensitive.
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token from OAuth login.
+    ApiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: API key (`agnost_<64-hex>`) for programmatic dashboard access. Issued via Settings → API Keys.
+    OrgScope:
+      type: apiKey
+      in: header
+      name: x-org-id
+      description: Optional. Selects which organization a JWT- or API-key-authenticated request targets when the credential has access to multiple.

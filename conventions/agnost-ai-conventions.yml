@@ -1,0 +1,38 @@
+generated: '2026-07-18'
+method: searched
+source: openapi/agnost-ai-openapi-original.yml + https://docs.agnost.ai
+authentication:
+  style: header apiKey + JWT bearer
+  ingestion: x-org-id (organization UUID, public routing identifier)
+  dashboard: 'Authorization: Bearer <jwt> + x-org-id, or x-api-key (agnost_<64-hex>)'
+  ref: authentication/agnost-ai-authentication.yml
+idempotency:
+  supported: false
+  notes: No Idempotency-Key header or idempotency contract is documented in the API or docs.
+pagination:
+  style: page-based
+  params: [page, page_size, limit]
+  notes: Dashboard list/query endpoints accept page / page_size (and limit on some queries); no cursor pagination observed.
+filtering:
+  style: request-body filters
+  notes: >-
+    Most analytics endpoints are POST with a JSON body carrying TimeRange
+    (start/end) and QueryFilters (see components.schemas). Time windows and
+    metadata filters are passed in the body rather than as query params.
+request_tracing:
+  request_id_header: null
+  notes: No documented request-id/trace-id response header on the REST API. Telemetry itself flows over OpenTelemetry (traceparent) into otel.agnost.ai.
+versioning:
+  ref: lifecycle/agnost-ai-lifecycle.yml
+  ingestion_prefix: /api/v1
+error_envelope:
+  shape: '{"error": "<message>"}'
+  content_type: application/json
+  ref: errors/agnost-ai-problem-types.yml
+rate_limiting:
+  documented: false
+  notes: No rate-limit headers (X-RateLimit-*, Retry-After) or published quotas found; plan tiers cap monthly message volume (Starter 1k, Pro 100k) rather than request rate.
+data_governance:
+  redaction: client-side (no automatic PII redaction/DLP before ingestion)
+  controls: disable_input/disable_output (Python), disableInput/disableOutput (TS), metadata allowlisting, pseudonymous user IDs
+  ref: https://docs.agnost.ai/data-governance

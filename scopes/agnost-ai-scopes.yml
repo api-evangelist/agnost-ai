@@ -1,0 +1,25 @@
+generated: '2026-07-18'
+method: searched
+source: https://mcp.agnost.ai/.well-known/oauth-authorization-server
+docs: https://docs.agnost.ai/agnost-mcp-server
+# The Agnost REST API itself uses header apiKey auth (x-org-id / x-api-key) and
+# JWT bearer, not OAuth2 — so there are no REST OAuth scopes. The only OAuth
+# surface is the hosted MCP server (OAuth 2.1, dynamic client registration),
+# which advertises a single scope.
+schemes:
+- name: MCP OAuth 2.1
+  source: https://mcp.agnost.ai/.well-known/oauth-authorization-server
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://mcp.agnost.ai/authorize
+    tokenUrl: https://mcp.agnost.ai/token
+    registrationUrl: https://mcp.agnost.ai/register
+    pkce: S256
+scopes:
+- scope: agnost
+  description: >-
+    Grants an OAuth-authenticated MCP client read access to the signed-in user's
+    Agnost dashboard data (errors, intents, conversations, SOPs, sentiments) for
+    the organization they are logged into.
+  flows: [authorizationCode]
+  sources: [https://mcp.agnost.ai/.well-known/oauth-authorization-server]

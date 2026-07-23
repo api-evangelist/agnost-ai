@@ -1,0 +1,41 @@
+generated: '2026-07-18'
+method: derived
+source: openapi/agnost-ai-openapi-original.yml
+docs: https://docs.agnost.ai/errors
+format: json-error-string        # NOT rfc9457
+# Agnost returns a simple JSON body: {"error": "<message string>"}.
+envelope:
+  content_type: application/json
+  schema:
+    error: string
+  example:
+    error: Invalid request body
+problems:
+- status: 400
+  ref: '#/components/responses/BadRequest'
+  title: Bad Request
+  cause: Missing required field or invalid UUID (validate session_id, event_id, user_data.user_id).
+- status: 401
+  ref: '#/components/responses/Unauthorized'
+  title: Unauthorized
+  cause: Missing JWT / API key when calling dashboard endpoints.
+  remediation: 'Send Authorization: Bearer <jwt> or x-api-key plus the right x-org-id.'
+- status: 403
+  ref: '#/components/responses/Forbidden'
+  title: Forbidden
+  cause: Wrong org scope for the authenticated principal.
+- status: 404
+  ref: '#/components/responses/NotFound'
+  title: Not Found
+  cause: Resource (organization, alert, SOP, sentiment, chart, connection, API key) does not exist.
+- status: 422
+  title: Unprocessable Entity
+  cause: Request body failed validation for a dashboard/classification operation.
+- status: 500
+  ref: '#/components/responses/ServerError'
+  title: Internal Server Error
+operational_notes:
+- symptom: No events appear
+  fix: Confirm org ID in Settings -> Organization; use https://api.agnost.ai or https://otel.agnost.ai/v1/traces.
+- symptom: OTel traces missing
+  fix: Set OTEL_EXPORTER_OTLP_HEADERS=X-Agnost-Org-ID=<org-id> and use /v1/traces endpoint.

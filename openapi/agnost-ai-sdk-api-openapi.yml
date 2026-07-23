@@ -1,0 +1,225 @@
+openapi: 3.0.3
+info:
+  title: Agnost AI Alerts SDK API
+  description: 'Complete REST API for Agnost AI: an analytics and monitoring platform for AI agents.
+
+
+    **Authentication**:
+
+    - SDK ingestion endpoints (`/api/v1/*`) use `x-org-id` header (UUID)
+
+    - Dashboard endpoints use `Authorization: Bearer <jwt>` + `x-org-id` header, or `x-api-key` header
+
+    - API key management uses JWT only (no API key auth)
+
+    '
+  version: 2.1.2
+  contact:
+    name: Agnost AI
+    url: https://agnost.ai
+servers:
+- url: https://api.agnost.ai
+  description: Production
+tags:
+- name: SDK
+  description: Event ingestion endpoints used by SDKs
+paths:
+  /api/v1/capture-session:
+    post:
+      tags:
+      - SDK
+      summary: Capture session
+      description: Start a session. Call once per conversation; reuse `session_id` on every event.
+      operationId: captureSession
+      parameters:
+      - name: x-org-id
+        in: header
+        required: true
+        description: Your organization ID (UUID, case-insensitive).
+        schema:
+          type: string
+          example: <org-id>
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - session_id
+              - user_data
+              properties:
+                session_id:
+                  type: string
+                  format: uuid
+                  description: Session UUID. Reuse on every event in this conversation.
+                  example: a3f9c182-7d4e-4b6a-9e21-c5d8f0b4e731
+                user_data:
+                  type: object
+                  description: End-user identity. `user_id` is required; other traits are supported for analytics. The example shows shape, but production integrations should prefer a stable pseudonymous ID and avoid raw email, name, phone, or other personal data unless explicitly approved.
+                  required:
+                  - user_id
+                  properties:
+                    user_id:
+                      type: string
+                      example: user-anon-002
+                  additionalProperties:
+                    type: string
+                  example:
+                    user_id: user-anon-002
+                    email: user@example.com
+                    user_plan: pro
+                metadata:
+                  type: object
+                  additionalProperties:
+                    type: string
+                  description: Free-form session metadata. Prefer allowlisted operational fields; do not send secrets or sensitive personal data.
+                  example:
+                    language: hi-IN
+                timestamp:
+                  type: integer
+                  format: int64
+                  description: Unix time in **ms** when the session began. Defaults to server time.
+                  example: 1714867200000
+                client_config:
+                  type: string
+                  description: Free-form client/SDK label.
+                  example: client-segment-001
+      responses:
+        '200':
+          description: Session created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  session_id:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /api/v1/capture-event:
+    post:
+      tags:
+      - SDK
+      summary: Capture event
+      description: Record one turn-pair or tool call. Generate `event_id` client-side so children can reference parents.
+      operationId: captureEvent
+      parameters:
+      - name: x-org-id
+        in: header
+        required: true
+        description: Your organization ID (UUID, case-insensitive).
+        schema:
+          type: string
+          example: <org-id>
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - event_id
+              - session_id
+              - primitive_name
+              - args
+              - result
+              properties:
+                event_id:
+                  type: string
+                  format: uuid
+                  description: Client-generated UUID. Use as `parent_id` on child events.
+                  example: e8b1c52f-3a9d-4e7c-8f0b-2d6a91c4ef58
+                session_id:
+                  type: string
+                  format: uuid
+                  description: Session UUID from `capture-session`.
+                  example: a3f9c182-7d4e-4b6a-9e21-c5d8f0b4e731
+                primitive_name:
+                  type: string
+                  description: Agent name (turn-pair) or tool name (tool call).
+                  example: your-agent-name
+                args:
+                  type: string
+                  description: Input — user message or JSON-encoded tool args.
+                  example: your input in plain text or JSON-encoded string
+                result:
+                  type: string
+                  description: Output — assistant reply or JSON-encoded tool result.
+                  example: your output in plain text or JSON-encoded string
+                success:
+                  type: boolean
+                  description: Defaults to `true`.
+                latency:
+                  type: integer
+                  description: Execution time in **ms**.
+                  example: 5200
+                timestamp:
+                  type: integer
+                  format: int64
+                  description: Unix time in **ms** when the event occurred. Defaults to server time.
+                  example: 1714867201000
+                parent_id:
+                  type: string
+                  format: uuid
+                  description: Parent event UUID. Set on tool calls to point at the agent turn (or parent tool) that triggered them.
+                  example: 4c7d2e8a-1b95-4f3d-a08e-7b3c9d12f5e6
+                metadata:
+                  type: object
+                  additionalProperties:
+                    type: string
+                  description: Free-form event metadata.
+                  example:
+                    language: hi-IN
+      responses:
+        '200':
+          description: Event recorded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  event_id:
+                    type: string
+                    format: uuid
+        '400':
+          $ref: '#/components/responses/BadRequest'
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+      - error
+      example:
+        error: Invalid request body
+  responses:
+    BadRequest:
+      description: Invalid request body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  securitySchemes:
+    OrgId:
+      type: apiKey
+      in: header
+      name: x-org-id
+      description: Organization ID (UUID). Used by SDKs for event ingestion. Header is case-insensitive.
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token from OAuth login.
+    ApiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: API key (`agnost_<64-hex>`) for programmatic dashboard access. Issued via Settings → API Keys.
+    OrgScope:
+      type: apiKey
+      in: header
+      name: x-org-id
+      description: Optional. Selects which organization a JWT- or API-key-authenticated request targets when the credential has access to multiple.

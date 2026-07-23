@@ -1,0 +1,336 @@
+openapi: 3.0.3
+info:
+  title: Agnost AI Alerts Organizations API
+  description: 'Complete REST API for Agnost AI: an analytics and monitoring platform for AI agents.
+
+
+    **Authentication**:
+
+    - SDK ingestion endpoints (`/api/v1/*`) use `x-org-id` header (UUID)
+
+    - Dashboard endpoints use `Authorization: Bearer <jwt>` + `x-org-id` header, or `x-api-key` header
+
+    - API key management uses JWT only (no API key auth)
+
+    '
+  version: 2.1.2
+  contact:
+    name: Agnost AI
+    url: https://agnost.ai
+servers:
+- url: https://api.agnost.ai
+  description: Production
+tags:
+- name: Organizations
+  description: Organization management
+paths:
+  /dashboard/api/profile:
+    get:
+      tags:
+      - Organizations
+      summary: Get current user profile
+      operationId: getProfile
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      responses:
+        '200':
+          description: User profile with org info
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /dashboard/api/organizations:
+    get:
+      tags:
+      - Organizations
+      summary: List organizations
+      operationId: listOrganizations
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: List of organizations the user belongs to
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Organization'
+    post:
+      tags:
+      - Organizations
+      summary: Create organization
+      operationId: createOrganization
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - name
+              properties:
+                name:
+                  type: string
+      responses:
+        '201':
+          description: Organization created
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /dashboard/api/organizations/{id}:
+    put:
+      tags:
+      - Organizations
+      summary: Update organization
+      operationId: updateOrganization
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        '200':
+          description: Organization updated
+    delete:
+      tags:
+      - Organizations
+      summary: Delete organization
+      operationId: deleteOrganization
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: Organization deleted
+  /dashboard/api/organization/displayId:
+    get:
+      tags:
+      - Organizations
+      summary: Get the public-facing org display ID
+      description: 'Returns the short, public-facing display ID for the active organization.
+
+        Used by the dashboard UI to render a user-friendly org identifier
+
+        without exposing the internal UUID.
+
+        '
+      operationId: getOrgDisplayID
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      responses:
+        '200':
+          description: Display ID for the active organization
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  display_id:
+                    type: string
+  /dashboard/api/organizations/{id}/members:
+    get:
+      tags:
+      - Organizations
+      summary: List organization members
+      operationId: listOrgMembers
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: List of members
+    post:
+      tags:
+      - Organizations
+      summary: Add member to organization
+      operationId: addOrgMember
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - email
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        '200':
+          description: Member added
+  /dashboard/api/organization/event-keys:
+    get:
+      tags:
+      - Organizations
+      summary: Get event metadata key configuration
+      operationId: getEventKeys
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      responses:
+        '200':
+          description: Event key configuration
+    put:
+      tags:
+      - Organizations
+      summary: Update event metadata keys
+      operationId: updateEventKeys
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                keys:
+                  type: array
+                  items:
+                    type: string
+                include_keys:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Event keys updated
+  /dashboard/api/organization/conversation-keys:
+    get:
+      tags:
+      - Organizations
+      summary: Get conversation metadata key configuration
+      operationId: getConversationKeys
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      responses:
+        '200':
+          description: Conversation key configuration
+    put:
+      tags:
+      - Organizations
+      summary: Update conversation metadata keys
+      operationId: updateConversationKeys
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                keys:
+                  type: array
+                  items:
+                    type: string
+                include_keys:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Conversation keys updated
+components:
+  schemas:
+    Organization:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        subscription:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+      - error
+      example:
+        error: Invalid request body
+  responses:
+    BadRequest:
+      description: Invalid request body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Missing or invalid authentication
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  securitySchemes:
+    OrgId:
+      type: apiKey
+      in: header
+      name: x-org-id
+      description: Organization ID (UUID). Used by SDKs for event ingestion. Header is case-insensitive.
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token from OAuth login.
+    ApiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: API key (`agnost_<64-hex>`) for programmatic dashboard access. Issued via Settings → API Keys.
+    OrgScope:
+      type: apiKey
+      in: header
+      name: x-org-id
+      description: Optional. Selects which organization a JWT- or API-key-authenticated request targets when the credential has access to multiple.

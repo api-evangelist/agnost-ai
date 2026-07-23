@@ -1,0 +1,2724 @@
+openapi: 3.0.3
+info:
+  title: Agnost AI API
+  description: >
+    Complete REST API for Agnost AI: an analytics and monitoring platform for AI
+    agents.
+
+
+    **Authentication**:
+
+    - SDK ingestion endpoints (`/api/v1/*`) use `x-org-id` header (UUID)
+
+    - Dashboard endpoints use `Authorization: Bearer <jwt>` + `x-org-id` header,
+    or `x-api-key` header
+
+    - API key management uses JWT only (no API key auth)
+  version: 2.1.2
+  contact:
+    name: Agnost AI
+    url: https://agnost.ai
+servers:
+  - url: https://api.agnost.ai
+    description: Production
+tags:
+  - name: SDK
+    description: Event ingestion endpoints used by SDKs
+  - name: Dashboard
+    description: Analytics and metrics for the dashboard
+  - name: Organizations
+    description: Organization management
+  - name: Alerts
+    description: Alert configuration and monitoring
+  - name: SOPs
+    description: Standard Operating Procedures
+  - name: Sentiments
+    description: Sentiment and intent analysis
+  - name: Conversations
+    description: Conversation message and span retrieval
+  - name: Classification
+    description: LLM-based classification operations
+  - name: Onboarding
+    description: First-run helpers used during organization setup
+  - name: Connections
+    description: External integrations (Slack)
+  - name: Billing
+    description: Stripe billing management
+  - name: API Keys
+    description: API key management
+  - name: Auth
+    description: OAuth authentication callbacks
+  - name: System
+    description: Health checks, webhooks, internal endpoints
+components:
+  securitySchemes:
+    OrgId:
+      type: apiKey
+      in: header
+      name: x-org-id
+      description: >-
+        Organization ID (UUID). Used by SDKs for event ingestion. Header is
+        case-insensitive.
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token from OAuth login.
+    ApiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: >-
+        API key (`agnost_<64-hex>`) for programmatic dashboard access. Issued
+        via Settings → API Keys.
+    OrgScope:
+      type: apiKey
+      in: header
+      name: x-org-id
+      description: >-
+        Optional. Selects which organization a JWT- or API-key-authenticated
+        request targets when the credential has access to multiple.
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+      example:
+        error: Invalid request body
+    TimeRange:
+      type: string
+      enum:
+        - 1min
+        - 1h
+        - 1d
+        - 1w
+        - 1m
+        - all
+      default: 1w
+    QueryFilters:
+      type: object
+      properties:
+        time_range:
+          $ref: '#/components/schemas/TimeRange'
+        connection_type:
+          oneOf:
+            - type: string
+            - type: array
+              items:
+                type: string
+        agent_name:
+          oneOf:
+            - type: string
+            - type: array
+              items:
+                type: string
+        metadata_filters:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+        page:
+          type: integer
+          default: 1
+        page_size:
+          type: integer
+          default: 20
+    AlertConfig:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        event_type:
+          type: string
+        natural_language_query:
+          type: string
+        sql_query:
+          type: string
+        context_sql_query:
+          type: string
+        threshold_value:
+          type: number
+        threshold_operator:
+          type: string
+          enum:
+            - '>'
+            - <
+            - '>='
+            - <=
+            - '=='
+        check_interval_hours:
+          type: integer
+        connection_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        recipient_emails:
+          type: array
+          items:
+            type: string
+        active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    SOPConfig:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        active:
+          type: boolean
+    SentimentConfig:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        active:
+          type: boolean
+    Organization:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        subscription:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+    APIKeyRecord:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        created_by:
+          type: string
+  responses:
+    BadRequest:
+      description: Invalid request body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Missing or invalid authentication
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: No access to the requested organization
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+paths:
+  /healthz:
+    get:
+      tags:
+        - System
+      summary: Health check
+      operationId: healthCheck
+      security: []
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: ok
+  /api/v1/capture-session:
+    post:
+      tags:
+        - SDK
+      summary: Capture session
+      description: >-
+        Start a session. Call once per conversation; reuse `session_id` on every
+        event.
+      operationId: captureSession
+      parameters:
+        - name: x-org-id
+          in: header
+          required: true
+          description: Your organization ID (UUID, case-insensitive).
+          schema:
+            type: string
+            example: <org-id>
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - session_id
+                - user_data
+              properties:
+                session_id:
+                  type: string
+                  format: uuid
+                  description: Session UUID. Reuse on every event in this conversation.
+                  example: a3f9c182-7d4e-4b6a-9e21-c5d8f0b4e731
+                user_data:
+                  type: object
+                  description: >-
+                    End-user identity. `user_id` is required; other traits are
+                    supported for analytics. The example shows shape, but
+                    production integrations should prefer a stable pseudonymous
+                    ID and avoid raw email, name, phone, or other personal data
+                    unless explicitly approved.
+                  required:
+                    - user_id
+                  properties:
+                    user_id:
+                      type: string
+                      example: user-anon-002
+                  additionalProperties:
+                    type: string
+                  example:
+                    user_id: user-anon-002
+                    email: user@example.com
+                    user_plan: pro
+                metadata:
+                  type: object
+                  additionalProperties:
+                    type: string
+                  description: >-
+                    Free-form session metadata. Prefer allowlisted operational
+                    fields; do not send secrets or sensitive personal data.
+                  example:
+                    language: hi-IN
+                timestamp:
+                  type: integer
+                  format: int64
+                  description: >-
+                    Unix time in **ms** when the session began. Defaults to
+                    server time.
+                  example: 1714867200000
+                client_config:
+                  type: string
+                  description: Free-form client/SDK label.
+                  example: client-segment-001
+      responses:
+        '200':
+          description: Session created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  session_id:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /api/v1/capture-event:
+    post:
+      tags:
+        - SDK
+      summary: Capture event
+      description: >-
+        Record one turn-pair or tool call. Generate `event_id` client-side so
+        children can reference parents.
+      operationId: captureEvent
+      parameters:
+        - name: x-org-id
+          in: header
+          required: true
+          description: Your organization ID (UUID, case-insensitive).
+          schema:
+            type: string
+            example: <org-id>
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - event_id
+                - session_id
+                - primitive_name
+                - args
+                - result
+              properties:
+                event_id:
+                  type: string
+                  format: uuid
+                  description: Client-generated UUID. Use as `parent_id` on child events.
+                  example: e8b1c52f-3a9d-4e7c-8f0b-2d6a91c4ef58
+                session_id:
+                  type: string
+                  format: uuid
+                  description: Session UUID from `capture-session`.
+                  example: a3f9c182-7d4e-4b6a-9e21-c5d8f0b4e731
+                primitive_name:
+                  type: string
+                  description: Agent name (turn-pair) or tool name (tool call).
+                  example: your-agent-name
+                args:
+                  type: string
+                  description: Input — user message or JSON-encoded tool args.
+                  example: your input in plain text or JSON-encoded string
+                result:
+                  type: string
+                  description: Output — assistant reply or JSON-encoded tool result.
+                  example: your output in plain text or JSON-encoded string
+                success:
+                  type: boolean
+                  description: Defaults to `true`.
+                latency:
+                  type: integer
+                  description: Execution time in **ms**.
+                  example: 5200
+                timestamp:
+                  type: integer
+                  format: int64
+                  description: >-
+                    Unix time in **ms** when the event occurred. Defaults to
+                    server time.
+                  example: 1714867201000
+                parent_id:
+                  type: string
+                  format: uuid
+                  description: >-
+                    Parent event UUID. Set on tool calls to point at the agent
+                    turn (or parent tool) that triggered them.
+                  example: 4c7d2e8a-1b95-4f3d-a08e-7b3c9d12f5e6
+                metadata:
+                  type: object
+                  additionalProperties:
+                    type: string
+                  description: Free-form event metadata.
+                  example:
+                    language: hi-IN
+      responses:
+        '200':
+          description: Event recorded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  event_id:
+                    type: string
+                    format: uuid
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /dashboard/api/profile:
+    get:
+      tags:
+        - Organizations
+      summary: Get current user profile
+      operationId: getProfile
+      security:
+        - BearerAuth: []
+          OrgScope: []
+      responses:
+        '200':
+          description: User profile with org info
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /dashboard/api/organizations:
+    get:
+      tags:
+        - Organizations
+      summary: List organizations
+      operationId: listOrganizations
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of organizations the user belongs to
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Organization'
+    post:
+      tags:
+        - Organizations
+      summary: Create organization
+      operationId: createOrganization
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+      responses:
+        '201':
+          description: Organization created
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /dashboard/api/organizations/{id}:
+    put:
+      tags:
+        - Organizations
+      summary: Update organization
+      operationId: updateOrganization
+      security:
+        - BearerAuth: []
+          OrgScope: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        '200':
+          description: Organization updated
+    delete:
+      tags:
+        - Organizations
+      summary: Delete organization
+      operationId: deleteOrganization
+      security:
+        - BearerAuth: []
+          OrgScope: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Organization deleted
+  /dashboard/api/organization/displayId:
+    get:
+      tags:
+        - Organizations
+      summary: Get the public-facing org display ID
+      description: |
+        Returns the short, public-facing display ID for the active organization.
+        Used by the dashboard UI to render a user-friendly org identifier
+        without exposing the internal UUID.
+      operationId: getOrgDisplayID
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      responses:
+        '200':
+          description: Display ID for the active organization
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  display_id:
+                    type: string
+  /dashboard/api/organizations/{id}/members:
+    get:
+      tags:
+        - Organizations
+      summary: List organization members
+      operationId: listOrgMembers
+      security:
+        - BearerAuth: []
+          OrgScope: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of members
+    post:
+      tags:
+        - Organizations
+      summary: Add member to organization
+      operationId: addOrgMember
+      security:
+        - BearerAuth: []
+          OrgScope: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        '200':
+          description: Member added
+  /dashboard/api/dashboard:
+    post:
+      tags:
+        - Dashboard
+      summary: Get dashboard metrics
+      operationId: getDashboardMetrics
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: Dashboard metrics including totals, daily stats, success rate
+  /dashboard/api/login-summary:
+    get:
+      tags:
+        - Dashboard
+      summary: Generate login summary
+      description: |
+        Generates a fresh 48-hour login summary for the selected organization.
+        The response is not persisted; dashboard clients request it after org
+        selection settles, then keep it in memory for the current page session.
+        If no recent data exists, the endpoint returns a generic `summary_text`
+        with an empty `sections` array.
+      operationId: getLoginSummary
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      parameters:
+        - name: org_id
+          in: query
+          required: false
+          description: >-
+            Organization ID. Optional when org scope is supplied by JWT/API-key
+            auth or `x-org-id`.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Generated login summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  org_id:
+                    type: string
+                    format: uuid
+                  window_start:
+                    type: string
+                    format: date-time
+                  window_end:
+                    type: string
+                    format: date-time
+                  generated_at:
+                    type: string
+                    format: date-time
+                  summary_text:
+                    type: string
+                    description: >-
+                      LLM-written summary capped at 90 words, or a generic
+                      no-data fallback.
+                  sections:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        key:
+                          type: string
+                          example: errors
+                        title:
+                          type: string
+                          example: Critical errors
+                        href:
+                          type: string
+                          example: /errors
+                        items:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              title:
+                                type: string
+                              detail:
+                                type: string
+                              count:
+                                type: integer
+                              href:
+                                type: string
+              example:
+                id: 89d7ad7e-0248-4f98-abfa-1278ce5b7b4a
+                org_id: 5344ec46-cfc4-478a-805f-8c9d0b5ed66a
+                window_start: '2026-07-06T12:00:00Z'
+                window_end: '2026-07-08T12:00:00Z'
+                generated_at: '2026-07-08T12:00:00Z'
+                summary_text: >-
+                  Critical errors remained concentrated in policy checks and
+                  webhook probes, with feature-request and billing-dispute
+                  intents leading the last 48 hours.
+                sections:
+                  - key: errors
+                    title: Critical errors
+                    href: /errors
+                    items:
+                      - title: policy_check
+                        detail: 4 critical errors in the last 48 hours
+                        count: 4
+                        href: /errors
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /dashboard/api/user-stories:
+    post:
+      tags:
+        - Dashboard
+      summary: Get user stories (conversations)
+      operationId: getUserStories
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: Recent conversations with event summaries
+  /dashboard/api/tool-stats:
+    post:
+      tags:
+        - Dashboard
+      summary: Get tool usage statistics
+      operationId: getToolStats
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: Tool usage breakdown
+  /dashboard/api/tool-checkpoint-stats:
+    post:
+      tags:
+        - Dashboard
+      summary: Get tool checkpoint timing stats
+      operationId: getToolCheckpointStats
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: Checkpoint timing statistics
+  /dashboard/api/tool-time-series:
+    post:
+      tags:
+        - Dashboard
+      summary: Get tool usage time series
+      operationId: getToolTimeSeries
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: Time-series data per tool
+  /dashboard/api/tool-error-distribution:
+    post:
+      tags:
+        - Dashboard
+      summary: Get error distribution by tool
+      operationId: getToolErrorDistribution
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: Error distribution data
+  /dashboard/api/errors:
+    post:
+      tags:
+        - Dashboard
+      summary: Get error events
+      operationId: getErrors
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: Paginated error list
+  /dashboard/api/errors/export:
+    post:
+      tags:
+        - Dashboard
+      summary: Export errors as CSV
+      operationId: exportErrors
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: CSV file download
+          content:
+            text/csv:
+              schema:
+                type: string
+  /dashboard/api/raw-logs:
+    post:
+      tags:
+        - Dashboard
+      summary: Get raw event logs
+      operationId: getRawLogs
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: Paginated raw log list
+  /dashboard/api/raw-logs/export:
+    post:
+      tags:
+        - Dashboard
+      summary: Export raw logs as CSV
+      operationId: exportRawLogs
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: CSV file download
+          content:
+            text/csv:
+              schema:
+                type: string
+  /dashboard/api/raw-logs/count:
+    post:
+      tags:
+        - Dashboard
+      summary: Get total count for raw logs query
+      description: |
+        Returns the total event count matching the same filters as `/raw-logs`,
+        served from the `event_daily_stats` materialized view for sub-second
+        latency. The frontend issues this in parallel with `/raw-logs` so the
+        page renders immediately and the total fills in when ready.
+
+        Returns `{"total_count": null}` when the filter set cannot be answered
+        by the materialized view (search query, client_config, connection_type,
+        or arbitrary metadata keys other than event_type).
+      operationId: getRawLogsCount
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: Total count, or null if filters are MV-incompatible
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_count:
+                    type: integer
+                    nullable: true
+  /dashboard/api/event-io:
+    post:
+      tags:
+        - Dashboard
+      summary: Get input/output for a specific event
+      operationId: getEventIO
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - event_id
+              properties:
+                event_id:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: Event input and output data
+  /dashboard/api/metadata-distribution:
+    post:
+      tags:
+        - Dashboard
+      summary: Get metadata key distribution
+      operationId: getMetadataDistribution
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: Distribution of metadata keys
+  /dashboard/api/command-center-summary:
+    post:
+      tags:
+        - Dashboard
+      summary: Get combined command center data
+      description: Combines metrics, user stories, errors, and tool stats in one call
+      operationId: getCommandCenterSummary
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: Combined dashboard data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  metrics:
+                    type: object
+                  user_stories:
+                    type: object
+                  errors:
+                    type: object
+                  tool_stats:
+                    type: array
+  /dashboard/api/tools-dashboard:
+    post:
+      tags:
+        - Dashboard
+      summary: Get combined tools dashboard data
+      description: Combines tool stats, time series, and saved charts
+      operationId: getToolsDashboard
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: Combined tools data
+  /dashboard/api/conversation-messages:
+    post:
+      tags:
+        - Conversations
+      summary: Get conversation messages
+      operationId: getConversationMessages
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - conversation_id
+              properties:
+                conversation_id:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: Conversation messages with I/O data
+  /dashboard/api/conversation-spans:
+    post:
+      tags:
+        - Conversations
+      summary: Get conversation spans (trace)
+      operationId: getConversationSpans
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - conversation_id
+              properties:
+                conversation_id:
+                  type: string
+                  format: uuid
+                event_id:
+                  type: string
+                  format: uuid
+                  description: Optional. Filter to ancestors/descendants of this event
+      responses:
+        '200':
+          description: Span hierarchy for the conversation
+  /dashboard/api/conversation-audio:
+    get:
+      tags:
+        - Conversations
+      summary: Get a presigned URL for a conversation's recorded audio
+      description: |
+        Returns a short-lived presigned URL the dashboard uses to play back
+        recorded audio for a voice conversation. The audio is stored in
+        object storage and only addressable through this endpoint.
+      operationId: getConversationAudio
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      parameters:
+        - name: conversation_id
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Presigned audio URL
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url:
+                    type: string
+                    format: uri
+                  expires_at:
+                    type: string
+                    format: date-time
+        '404':
+          description: No audio recorded for this conversation
+  /dashboard/api/conversation-detail:
+    post:
+      tags:
+        - Conversations
+      summary: Get conversation detail (messages + spans combined)
+      operationId: getConversationDetail
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - conversation_id
+              properties:
+                conversation_id:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: Combined messages and spans
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  messages:
+                    type: object
+                  spans:
+                    type: object
+  /dashboard/api/spotlight-search:
+    post:
+      tags:
+        - Conversations
+      summary: Semantic search across conversations
+      operationId: spotlightSearch
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/QueryFilters'
+                - type: object
+                  required:
+                    - query
+                  properties:
+                    query:
+                      type: string
+      responses:
+        '200':
+          description: Search results
+  /dashboard/api/intent-keywords:
+    post:
+      tags:
+        - Conversations
+      summary: Extract intent keywords
+      operationId: getIntentKeywords
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: Keyword extraction results
+  /dashboard/api/sops:
+    get:
+      tags:
+        - SOPs
+      summary: List SOPs
+      operationId: listSOPs
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      responses:
+        '200':
+          description: List of SOPs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SOPConfig'
+    post:
+      tags:
+        - SOPs
+      summary: Create SOP
+      operationId: createSOP
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - description
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                active:
+                  type: boolean
+      responses:
+        '201':
+          description: SOP created
+  /dashboard/api/sops/{id}:
+    put:
+      tags:
+        - SOPs
+      summary: Update SOP
+      operationId: updateSOP
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                active:
+                  type: boolean
+      responses:
+        '200':
+          description: SOP updated
+    delete:
+      tags:
+        - SOPs
+      summary: Delete SOP
+      operationId: deleteSOP
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: SOP deleted
+  /dashboard/api/sop-violations:
+    post:
+      tags:
+        - SOPs
+      summary: Get SOP violation events
+      operationId: getSOPViolations
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: Events that violated SOPs
+  /dashboard/api/sop-stats:
+    post:
+      tags:
+        - SOPs
+      summary: Get SOP violation distribution stats
+      description: |
+        Mirrors `/sentiment-stats`. Returns total analyzed events, total events
+        in the time range, top violating SOPs, and the full SOP distribution.
+      operationId: getSOPStats
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: SOP distribution with counts per SOP title
+  /dashboard/api/sop-messages:
+    post:
+      tags:
+        - SOPs
+      summary: Get assistant messages matching a specific SOP violation
+      description: >
+        Mirrors `/sentiment-messages`, but matches on the assistant output
+        rather
+
+        than the user input. The `tag` field is the SOP title to filter on.
+      operationId: getMessagesBySOP
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/QueryFilters'
+                - type: object
+                  required:
+                    - tag
+                  properties:
+                    tag:
+                      type: string
+                      description: SOP title to match
+                    page:
+                      type: integer
+                      default: 1
+                    limit:
+                      type: integer
+                      default: 50
+      responses:
+        '200':
+          description: Paginated assistant messages that violated the SOP
+  /dashboard/api/sop-timeline:
+    post:
+      tags:
+        - SOPs
+      summary: Get timeline for a single SOP violation
+      description: >-
+        Mirrors `/sentiment-timeline`. Bucketing is automatic based on the time
+        range.
+      operationId: getSOPTimeline
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/QueryFilters'
+                - type: object
+                  required:
+                    - tag
+                  properties:
+                    tag:
+                      type: string
+                      description: SOP title
+      responses:
+        '200':
+          description: Per-bucket violation counts plus the bucket size in seconds
+  /dashboard/api/sop-timelines:
+    post:
+      tags:
+        - SOPs
+      summary: Get per-SOP timelines for multiple SOP titles in a single call
+      description: Mirrors `/sentiment-timelines`. Pass an array of SOP titles in `tags`.
+      operationId: getBatchSOPTimelines
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/QueryFilters'
+                - type: object
+                  required:
+                    - tags
+                  properties:
+                    tags:
+                      type: array
+                      items:
+                        type: string
+      responses:
+        '200':
+          description: Map of SOP title → timeline data points
+  /dashboard/api/summarize-sop-distribution:
+    post:
+      tags:
+        - SOPs
+      summary: LLM summary of why a SOP is being violated
+      description: |
+        Pulls assistant outputs that violated the given SOP within the time
+        range and produces a natural-language summary via the LLM. Mirrors
+        `/summarize-intent-distribution`.
+      operationId: summarizeSOPDistribution
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - tag
+              properties:
+                org_id:
+                  type: string
+                  format: uuid
+                tag:
+                  type: string
+                  description: SOP title to summarize
+                time_range:
+                  $ref: '#/components/schemas/TimeRange'
+      responses:
+        '200':
+          description: Natural-language summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  summary:
+                    type: string
+  /dashboard/api/sentiments:
+    get:
+      tags:
+        - Sentiments
+      summary: List sentiment configs
+      operationId: listSentiments
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      responses:
+        '200':
+          description: List of sentiment configurations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SentimentConfig'
+    post:
+      tags:
+        - Sentiments
+      summary: Create sentiment (intent) config
+      operationId: createSentiment
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - description
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                active:
+                  type: boolean
+      responses:
+        '201':
+          description: Sentiment created
+  /dashboard/api/sentiments/{id}:
+    put:
+      tags:
+        - Sentiments
+      summary: Update sentiment config
+      operationId: updateSentiment
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                active:
+                  type: boolean
+      responses:
+        '200':
+          description: Sentiment updated
+    delete:
+      tags:
+        - Sentiments
+      summary: Delete sentiment config
+      operationId: deleteSentiment
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Sentiment deleted
+  /dashboard/api/sentiment-stats:
+    post:
+      tags:
+        - Sentiments
+      summary: Get sentiment distribution stats
+      operationId: getSentimentStats
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: Sentiment distribution with counts per tag
+  /dashboard/api/sentiment-messages:
+    post:
+      tags:
+        - Sentiments
+      summary: Get messages matching an active or suggested intent tag
+      description: >-
+        Proactively suggested intents expose up to 20 stored evidence matches
+        before approval. Active and suggested matches honor time_range and
+        metadata filters.
+      operationId: getMessagesByTag
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/QueryFilters'
+                - type: object
+                  required:
+                    - tag
+                  properties:
+                    tag:
+                      type: string
+      responses:
+        '200':
+          description: Active intent matches or suggested-intent evidence preview
+  /dashboard/api/sentiment-timeline:
+    post:
+      tags:
+        - Sentiments
+      summary: Get timeline for a single sentiment tag
+      operationId: getTagTimeline
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/QueryFilters'
+                - type: object
+                  required:
+                    - tag
+                  properties:
+                    tag:
+                      type: string
+      responses:
+        '200':
+          description: Daily event counts for the tag
+  /dashboard/api/sentiment-timelines:
+    post:
+      tags:
+        - Sentiments
+      summary: Get timelines for multiple tags (batch)
+      operationId: getBatchTagTimelines
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - tags
+              properties:
+                tags:
+                  type: array
+                  items:
+                    type: string
+                time_range:
+                  $ref: '#/components/schemas/TimeRange'
+      responses:
+        '200':
+          description: Timelines keyed by tag name
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  timelines:
+                    type: object
+                    additionalProperties:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          timestamp:
+                            type: string
+                          value:
+                            type: number
+  /dashboard/api/sentiment-tags:
+    get:
+      tags:
+        - Sentiments
+      summary: List organization sentiment/intent tags
+      operationId: getOrganizationTags
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      responses:
+        '200':
+          description: Array of tag names
+  /dashboard/api/summarize-intent-distribution:
+    post:
+      tags:
+        - Sentiments
+      summary: LLM summary of an intent distribution
+      description: |
+        Pulls user inputs matching the given intent within the time range and
+        produces a natural-language summary via the LLM.
+      operationId: summarizeIntentDistribution
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - tag
+              properties:
+                org_id:
+                  type: string
+                  format: uuid
+                tag:
+                  type: string
+                  description: Intent title to summarize
+                time_range:
+                  $ref: '#/components/schemas/TimeRange'
+      responses:
+        '200':
+          description: Natural-language summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  summary:
+                    type: string
+  /dashboard/api/run-intent-classification:
+    post:
+      tags:
+        - Classification
+      summary: Run intent classification on conversations
+      operationId: runIntentClassification
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: Classification results
+  /dashboard/api/run-sop-classification:
+    post:
+      tags:
+        - Classification
+      summary: Run SOP classification on conversations
+      operationId: runSOPClassification
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: SOP classification results
+  /dashboard/api/run-spotlight-query:
+    post:
+      tags:
+        - Classification
+      summary: Run LLM-based spotlight query (SSE streaming)
+      operationId: runSpotlightLLMQuery
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/QueryFilters'
+                - type: object
+                  required:
+                    - query
+                  properties:
+                    query:
+                      type: string
+      responses:
+        '200':
+          description: SSE stream of classification results
+          content:
+            text/event-stream:
+              schema:
+                type: string
+  /dashboard/api/alerts:
+    get:
+      tags:
+        - Alerts
+      summary: List alerts
+      operationId: listAlerts
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      responses:
+        '200':
+          description: List of alert configurations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AlertConfig'
+    post:
+      tags:
+        - Alerts
+      summary: Create alert
+      operationId: createAlert
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AlertConfig'
+      responses:
+        '201':
+          description: Alert created
+  /dashboard/api/alerts/{id}:
+    get:
+      tags:
+        - Alerts
+      summary: Get alert by ID
+      operationId: getAlert
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Alert configuration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlertConfig'
+    put:
+      tags:
+        - Alerts
+      summary: Update alert
+      operationId: updateAlert
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AlertConfig'
+      responses:
+        '200':
+          description: Alert updated
+    delete:
+      tags:
+        - Alerts
+      summary: Delete alert
+      operationId: deleteAlert
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Alert deleted
+  /dashboard/api/alerts/{id}/toggle:
+    post:
+      tags:
+        - Alerts
+      summary: Toggle alert active status
+      operationId: toggleAlert
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Alert toggled
+  /dashboard/api/alerts/{id}/history:
+    get:
+      tags:
+        - Alerts
+      summary: Get alert execution history
+      operationId: getAlertHistory
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Last 50 alert executions
+  /dashboard/api/alerts/generate-query:
+    post:
+      tags:
+        - Alerts
+      summary: Generate alert SQL from natural language (LLM)
+      operationId: generateAlertQuery
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - natural_language_query
+              properties:
+                natural_language_query:
+                  type: string
+      responses:
+        '200':
+          description: Generated SQL query
+  /dashboard/api/alerts/build-query:
+    post:
+      tags:
+        - Alerts
+      summary: Build alert SQL from structured params (no LLM)
+      operationId: buildAlertQuery
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - params
+              properties:
+                params:
+                  type: object
+      responses:
+        '200':
+          description: Built SQL query
+  /dashboard/api/alerts/test-query:
+    post:
+      tags:
+        - Alerts
+      summary: Test a SQL query and return results
+      operationId: testAlertQuery
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - sql_query
+              properties:
+                sql_query:
+                  type: string
+                query_type:
+                  type: string
+                  enum:
+                    - condition
+                    - action
+                  default: condition
+      responses:
+        '200':
+          description: Query results
+  /dashboard/api/alerts/{id}/test:
+    post:
+      tags:
+        - Alerts
+      summary: Send a test notification for an existing alert
+      description: |
+        Fires the alert's notification action immediately, with sample/test
+        context, so the user can verify the wiring (Slack channel, email
+        recipients, message format) without waiting for the next scheduled
+        evaluation.
+      operationId: sendTestNotification
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Test notification sent
+  /dashboard/api/alerts/summarize-action:
+    post:
+      tags:
+        - Alerts
+      summary: LLM summarize action query results
+      operationId: summarizeAction
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - action_prompt
+                - rows
+              properties:
+                action_prompt:
+                  type: string
+                rows:
+                  type: string
+      responses:
+        '200':
+          description: Summary text
+  /dashboard/api/report-config:
+    get:
+      tags:
+        - Alerts
+      summary: Get report configuration
+      operationId: getReportConfig
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      responses:
+        '200':
+          description: Report configuration
+    put:
+      tags:
+        - Alerts
+      summary: Update report configuration
+      operationId: saveReportConfig
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Report config saved
+  /dashboard/api/dashboard/charts:
+    get:
+      tags:
+        - Dashboard
+      summary: List saved dashboard charts
+      operationId: listDashboardCharts
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      responses:
+        '200':
+          description: List of chart configurations
+    post:
+      tags:
+        - Dashboard
+      summary: Create dashboard chart
+      operationId: createDashboardChart
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Chart created
+  /dashboard/api/dashboard/charts/{id}:
+    delete:
+      tags:
+        - Dashboard
+      summary: Delete dashboard chart
+      operationId: deleteDashboardChart
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Chart deleted
+  /dashboard/api/dashboard/charts/reorder:
+    put:
+      tags:
+        - Dashboard
+      summary: Reorder dashboard charts
+      operationId: reorderDashboardCharts
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - chart_ids
+              properties:
+                chart_ids:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        '200':
+          description: Charts reordered
+  /dashboard/api/organization/event-keys:
+    get:
+      tags:
+        - Organizations
+      summary: Get event metadata key configuration
+      operationId: getEventKeys
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      responses:
+        '200':
+          description: Event key configuration
+    put:
+      tags:
+        - Organizations
+      summary: Update event metadata keys
+      operationId: updateEventKeys
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                keys:
+                  type: array
+                  items:
+                    type: string
+                include_keys:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Event keys updated
+  /dashboard/api/organization/conversation-keys:
+    get:
+      tags:
+        - Organizations
+      summary: Get conversation metadata key configuration
+      operationId: getConversationKeys
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      responses:
+        '200':
+          description: Conversation key configuration
+    put:
+      tags:
+        - Organizations
+      summary: Update conversation metadata keys
+      operationId: updateConversationKeys
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                keys:
+                  type: array
+                  items:
+                    type: string
+                include_keys:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Conversation keys updated
+  /dashboard/api/organization/api-keys:
+    get:
+      tags:
+        - API Keys
+      summary: List API keys
+      operationId: listAPIKeys
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of API keys (hashes, not raw keys)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  api_keys:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/APIKeyRecord'
+    post:
+      tags:
+        - API Keys
+      summary: Create API key
+      operationId: createAPIKey
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+      responses:
+        '201':
+          description: API key created (raw key returned ONCE)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  api_key:
+                    type: string
+                    description: Raw API key. Store securely, shown only once
+  /dashboard/api/organization/api-keys/{id}:
+    delete:
+      tags:
+        - API Keys
+      summary: Delete API key
+      operationId: deleteAPIKey
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: API key deleted
+  /dashboard/api/connections:
+    get:
+      tags:
+        - Connections
+      summary: List connections
+      operationId: listConnections
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      responses:
+        '200':
+          description: List of external integrations
+  /dashboard/api/connections/initiate-slack:
+    post:
+      tags:
+        - Connections
+      summary: Initiate Slack OAuth flow
+      operationId: initiateSlackOAuth
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      responses:
+        '200':
+          description: Slack OAuth URL
+  /dashboard/api/connections/{id}:
+    delete:
+      tags:
+        - Connections
+      summary: Delete connection
+      operationId: deleteConnection
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Connection deleted
+  /dashboard/api/connections/{id}/send-message:
+    post:
+      tags:
+        - Connections
+      summary: Send message via Slack connection
+      operationId: sendSlackMessage
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - message
+              properties:
+                message:
+                  type: string
+                channel:
+                  type: string
+      responses:
+        '200':
+          description: Message sent
+  /dashboard/api/billing/create-checkout:
+    post:
+      tags:
+        - Billing
+      summary: Create Stripe checkout session
+      operationId: createCheckoutSession
+      security:
+        - BearerAuth: []
+          OrgScope: []
+      responses:
+        '200':
+          description: Stripe checkout URL
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url:
+                    type: string
+                    format: uri
+  /dashboard/api/billing/create-portal:
+    post:
+      tags:
+        - Billing
+      summary: Create Stripe billing portal session
+      operationId: createPortalSession
+      security:
+        - BearerAuth: []
+          OrgScope: []
+      responses:
+        '200':
+          description: Stripe portal URL
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url:
+                    type: string
+                    format: uri
+  /dashboard/api/billing/cancel:
+    post:
+      tags:
+        - Billing
+      summary: Cancel subscription
+      operationId: cancelSubscription
+      security:
+        - BearerAuth: []
+          OrgScope: []
+      responses:
+        '200':
+          description: Subscription cancelled
+  /dashboard/api/onboarding/describe-product:
+    post:
+      tags:
+        - Onboarding
+      summary: Stream an LLM-generated product description from a website
+      description: |
+        Fetches the user's website (either a URL passed directly or inferred
+        from a corporate email domain) and streams a 2-3 sentence product
+        description over Server-Sent Events. Used during organization setup
+        so the user does not have to write the description by hand.
+
+        Returns 422 if the email domain is a free email provider, the site
+        cannot be reached, or extraction yielded too little content. The
+        client should ask the user to describe the product manually in those
+        cases.
+
+        Response is `text/event-stream`. Each event is a JSON object:
+        `{"text": "..."}` for incremental tokens, `{"error": "..."}` for
+        terminal failure. The stream ends with a `[DONE]` sentinel.
+      operationId: onboardingDescribeProduct
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  description: Website URL (preferred). Either url or email is required.
+                email:
+                  type: string
+                  format: email
+                  description: Falls back to the email's domain if url is not provided.
+      responses:
+        '200':
+          description: Server-Sent Events stream of description tokens
+          content:
+            text/event-stream:
+              schema:
+                type: string
+        '422':
+          description: Personal email, unreachable site, or insufficient content
+  /dashboard/api/onboarding/suggest-intents:
+    post:
+      tags:
+        - Onboarding
+      summary: Suggest 6 intents to track for a given product
+      description: |
+        Given a product description, returns exactly 6 suggested intents
+        (title + description pairs) that mix bug reports, frustration signals,
+        feature requests, churn signals, and positive signals. Always includes
+        two general-purpose intents ("Bug report", "Feature request") plus
+        4 product-specific suggestions. Used during organization setup to
+        seed the intent list.
+
+        `product_description` is capped at 5000 characters server-side.
+      operationId: onboardingSuggestIntents
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - product_description
+              properties:
+                product_description:
+                  type: string
+                  maxLength: 5000
+      responses:
+        '200':
+          description: Suggested intents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - title
+                    - description
+                  properties:
+                    title:
+                      type: string
+                    description:
+                      type: string
+  /auth/callback:
+    get:
+      tags:
+        - Auth
+      summary: Google OAuth callback (redirect)
+      operationId: googleOAuthCallbackGet
+      security: []
+      parameters:
+        - name: code
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '302':
+          description: Redirects to frontend with JWT token
+    post:
+      tags:
+        - Auth
+      summary: Google OAuth callback (JSON response)
+      operationId: googleOAuthCallbackPost
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - code
+              properties:
+                code:
+                  type: string
+      responses:
+        '200':
+          description: JWT token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+  /auth/slack/callback:
+    get:
+      tags:
+        - Auth
+      summary: Slack OAuth callback
+      operationId: slackOAuthCallback
+      security: []
+      parameters:
+        - name: code
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '302':
+          description: Redirects to frontend
+  /webhooks/stripe:
+    post:
+      tags:
+        - System
+      summary: Stripe webhook
+      operationId: stripeWebhook
+      security: []
+      description: Verified via Stripe-Signature header
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Webhook processed
+        '400':
+          description: Invalid signature
+  /dashboard/api/classify:
+    post:
+      tags:
+        - Classification
+      summary: Unified classification endpoint
+      description: >
+        Dispatches to intent, SOP, or spotlight classification based on type
+        field.
+
+        Replaces separate run-intent-classification, run-sop-classification, and
+        run-spotlight-query endpoints.
+      operationId: runClassification
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/QueryFilters'
+                - type: object
+                  required:
+                    - type
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - intent
+                        - sop
+                        - spotlight
+                    query:
+                      type: string
+                      description: Required for spotlight type
+      responses:
+        '200':
+          description: Classification results
+  /dashboard/api/alerts/query:
+    post:
+      tags:
+        - Alerts
+      summary: Unified alert query endpoint
+      description: >
+        Dispatches to generate, build, test, or summarize based on action field.
+
+        Replaces separate generate-query, build-query, test-query, and
+        summarize-action endpoints.
+      operationId: alertQuery
+      security:
+        - BearerAuth: []
+          OrgScope: []
+        - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - action
+              properties:
+                action:
+                  type: string
+                  enum:
+                    - generate
+                    - build
+                    - test
+                    - summarize
+                natural_language_query:
+                  type: string
+                  description: For generate action
+                params:
+                  type: object
+                  description: For build action
+                sql_query:
+                  type: string
+                  description: For test action
+                query_type:
+                  type: string
+                  enum:
+                    - condition
+                    - action
+                  description: For test action
+                action_prompt:
+                  type: string
+                  description: For summarize action
+                rows:
+                  type: string
+                  description: For summarize action
+      responses:
+        '200':
+          description: Query operation results

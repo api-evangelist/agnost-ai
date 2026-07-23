@@ -1,0 +1,27 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for Agnost AI API
+  version: 1.0.0
+extends: openapi/agnost-ai-openapi-original.yml
+actions:
+- target: $.info
+  update:
+    x-apievangelist-enriched: '2026-07-18'
+    x-api-provider: Agnost AI
+    x-agent-ready: true
+    x-mcp-server: https://mcp.agnost.ai/mcp
+    x-otel-ingest: https://otel.agnost.ai/v1/traces
+    x-well-known-oauth: https://mcp.agnost.ai/.well-known/oauth-authorization-server
+    x-error-format: json-error-string
+    x-idempotency: false
+    x-pagination: page-based
+    x-status-page: https://status.agnost.ai
+    x-trust-center: https://trust.agnost.ai
+    x-compliance: [SOC 2 Type 1]
+- target: $.info.contact
+  update:
+    email: founders@agnost.ai
+- target: $.externalDocs
+  update:
+    description: Agnost AI documentation
+    url: https://docs.agnost.ai

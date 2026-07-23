@@ -1,0 +1,126 @@
+openapi: 3.0.3
+info:
+  title: Agnost AI Alerts Connections API
+  description: 'Complete REST API for Agnost AI: an analytics and monitoring platform for AI agents.
+
+
+    **Authentication**:
+
+    - SDK ingestion endpoints (`/api/v1/*`) use `x-org-id` header (UUID)
+
+    - Dashboard endpoints use `Authorization: Bearer <jwt>` + `x-org-id` header, or `x-api-key` header
+
+    - API key management uses JWT only (no API key auth)
+
+    '
+  version: 2.1.2
+  contact:
+    name: Agnost AI
+    url: https://agnost.ai
+servers:
+- url: https://api.agnost.ai
+  description: Production
+tags:
+- name: Connections
+  description: External integrations (Slack)
+paths:
+  /dashboard/api/connections:
+    get:
+      tags:
+      - Connections
+      summary: List connections
+      operationId: listConnections
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      responses:
+        '200':
+          description: List of external integrations
+  /dashboard/api/connections/initiate-slack:
+    post:
+      tags:
+      - Connections
+      summary: Initiate Slack OAuth flow
+      operationId: initiateSlackOAuth
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      responses:
+        '200':
+          description: Slack OAuth URL
+  /dashboard/api/connections/{id}:
+    delete:
+      tags:
+      - Connections
+      summary: Delete connection
+      operationId: deleteConnection
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: Connection deleted
+  /dashboard/api/connections/{id}/send-message:
+    post:
+      tags:
+      - Connections
+      summary: Send message via Slack connection
+      operationId: sendSlackMessage
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - message
+              properties:
+                message:
+                  type: string
+                channel:
+                  type: string
+      responses:
+        '200':
+          description: Message sent
+components:
+  securitySchemes:
+    OrgId:
+      type: apiKey
+      in: header
+      name: x-org-id
+      description: Organization ID (UUID). Used by SDKs for event ingestion. Header is case-insensitive.
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token from OAuth login.
+    ApiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: API key (`agnost_<64-hex>`) for programmatic dashboard access. Issued via Settings → API Keys.
+    OrgScope:
+      type: apiKey
+      in: header
+      name: x-org-id
+      description: Optional. Selects which organization a JWT- or API-key-authenticated request targets when the credential has access to multiple.

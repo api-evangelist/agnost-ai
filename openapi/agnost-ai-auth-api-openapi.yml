@@ -1,0 +1,106 @@
+openapi: 3.0.3
+info:
+  title: Agnost AI Alerts Auth API
+  description: 'Complete REST API for Agnost AI: an analytics and monitoring platform for AI agents.
+
+
+    **Authentication**:
+
+    - SDK ingestion endpoints (`/api/v1/*`) use `x-org-id` header (UUID)
+
+    - Dashboard endpoints use `Authorization: Bearer <jwt>` + `x-org-id` header, or `x-api-key` header
+
+    - API key management uses JWT only (no API key auth)
+
+    '
+  version: 2.1.2
+  contact:
+    name: Agnost AI
+    url: https://agnost.ai
+servers:
+- url: https://api.agnost.ai
+  description: Production
+tags:
+- name: Auth
+  description: OAuth authentication callbacks
+paths:
+  /auth/callback:
+    get:
+      tags:
+      - Auth
+      summary: Google OAuth callback (redirect)
+      operationId: googleOAuthCallbackGet
+      security: []
+      parameters:
+      - name: code
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        '302':
+          description: Redirects to frontend with JWT token
+    post:
+      tags:
+      - Auth
+      summary: Google OAuth callback (JSON response)
+      operationId: googleOAuthCallbackPost
+      security: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - code
+              properties:
+                code:
+                  type: string
+      responses:
+        '200':
+          description: JWT token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+  /auth/slack/callback:
+    get:
+      tags:
+      - Auth
+      summary: Slack OAuth callback
+      operationId: slackOAuthCallback
+      security: []
+      parameters:
+      - name: code
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        '302':
+          description: Redirects to frontend
+components:
+  securitySchemes:
+    OrgId:
+      type: apiKey
+      in: header
+      name: x-org-id
+      description: Organization ID (UUID). Used by SDKs for event ingestion. Header is case-insensitive.
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token from OAuth login.
+    ApiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: API key (`agnost_<64-hex>`) for programmatic dashboard access. Issued via Settings → API Keys.
+    OrgScope:
+      type: apiKey
+      in: header
+      name: x-org-id
+      description: Optional. Selects which organization a JWT- or API-key-authenticated request targets when the credential has access to multiple.

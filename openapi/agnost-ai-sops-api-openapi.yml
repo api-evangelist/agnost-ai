@@ -1,0 +1,376 @@
+openapi: 3.0.3
+info:
+  title: Agnost AI Alerts SOPs API
+  description: 'Complete REST API for Agnost AI: an analytics and monitoring platform for AI agents.
+
+
+    **Authentication**:
+
+    - SDK ingestion endpoints (`/api/v1/*`) use `x-org-id` header (UUID)
+
+    - Dashboard endpoints use `Authorization: Bearer <jwt>` + `x-org-id` header, or `x-api-key` header
+
+    - API key management uses JWT only (no API key auth)
+
+    '
+  version: 2.1.2
+  contact:
+    name: Agnost AI
+    url: https://agnost.ai
+servers:
+- url: https://api.agnost.ai
+  description: Production
+tags:
+- name: SOPs
+  description: Standard Operating Procedures
+paths:
+  /dashboard/api/sops:
+    get:
+      tags:
+      - SOPs
+      summary: List SOPs
+      operationId: listSOPs
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      responses:
+        '200':
+          description: List of SOPs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SOPConfig'
+    post:
+      tags:
+      - SOPs
+      summary: Create SOP
+      operationId: createSOP
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - title
+              - description
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                active:
+                  type: boolean
+      responses:
+        '201':
+          description: SOP created
+  /dashboard/api/sops/{id}:
+    put:
+      tags:
+      - SOPs
+      summary: Update SOP
+      operationId: updateSOP
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                active:
+                  type: boolean
+      responses:
+        '200':
+          description: SOP updated
+    delete:
+      tags:
+      - SOPs
+      summary: Delete SOP
+      operationId: deleteSOP
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: SOP deleted
+  /dashboard/api/sop-violations:
+    post:
+      tags:
+      - SOPs
+      summary: Get SOP violation events
+      operationId: getSOPViolations
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: Events that violated SOPs
+  /dashboard/api/sop-stats:
+    post:
+      tags:
+      - SOPs
+      summary: Get SOP violation distribution stats
+      description: 'Mirrors `/sentiment-stats`. Returns total analyzed events, total events
+
+        in the time range, top violating SOPs, and the full SOP distribution.
+
+        '
+      operationId: getSOPStats
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: SOP distribution with counts per SOP title
+  /dashboard/api/sop-messages:
+    post:
+      tags:
+      - SOPs
+      summary: Get assistant messages matching a specific SOP violation
+      description: 'Mirrors `/sentiment-messages`, but matches on the assistant output rather
+
+        than the user input. The `tag` field is the SOP title to filter on.
+
+        '
+      operationId: getMessagesBySOP
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/QueryFilters'
+              - type: object
+                required:
+                - tag
+                properties:
+                  tag:
+                    type: string
+                    description: SOP title to match
+                  page:
+                    type: integer
+                    default: 1
+                  limit:
+                    type: integer
+                    default: 50
+      responses:
+        '200':
+          description: Paginated assistant messages that violated the SOP
+  /dashboard/api/sop-timeline:
+    post:
+      tags:
+      - SOPs
+      summary: Get timeline for a single SOP violation
+      description: Mirrors `/sentiment-timeline`. Bucketing is automatic based on the time range.
+      operationId: getSOPTimeline
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/QueryFilters'
+              - type: object
+                required:
+                - tag
+                properties:
+                  tag:
+                    type: string
+                    description: SOP title
+      responses:
+        '200':
+          description: Per-bucket violation counts plus the bucket size in seconds
+  /dashboard/api/sop-timelines:
+    post:
+      tags:
+      - SOPs
+      summary: Get per-SOP timelines for multiple SOP titles in a single call
+      description: Mirrors `/sentiment-timelines`. Pass an array of SOP titles in `tags`.
+      operationId: getBatchSOPTimelines
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/QueryFilters'
+              - type: object
+                required:
+                - tags
+                properties:
+                  tags:
+                    type: array
+                    items:
+                      type: string
+      responses:
+        '200':
+          description: Map of SOP title → timeline data points
+  /dashboard/api/summarize-sop-distribution:
+    post:
+      tags:
+      - SOPs
+      summary: LLM summary of why a SOP is being violated
+      description: 'Pulls assistant outputs that violated the given SOP within the time
+
+        range and produces a natural-language summary via the LLM. Mirrors
+
+        `/summarize-intent-distribution`.
+
+        '
+      operationId: summarizeSOPDistribution
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - tag
+              properties:
+                org_id:
+                  type: string
+                  format: uuid
+                tag:
+                  type: string
+                  description: SOP title to summarize
+                time_range:
+                  $ref: '#/components/schemas/TimeRange'
+      responses:
+        '200':
+          description: Natural-language summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  summary:
+                    type: string
+components:
+  schemas:
+    QueryFilters:
+      type: object
+      properties:
+        time_range:
+          $ref: '#/components/schemas/TimeRange'
+        connection_type:
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        agent_name:
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        metadata_filters:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+        page:
+          type: integer
+          default: 1
+        page_size:
+          type: integer
+          default: 20
+    TimeRange:
+      type: string
+      enum:
+      - 1min
+      - 1h
+      - 1d
+      - 1w
+      - 1m
+      - all
+      default: 1w
+    SOPConfig:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        active:
+          type: boolean
+  securitySchemes:
+    OrgId:
+      type: apiKey
+      in: header
+      name: x-org-id
+      description: Organization ID (UUID). Used by SDKs for event ingestion. Header is case-insensitive.
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token from OAuth login.
+    ApiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: API key (`agnost_<64-hex>`) for programmatic dashboard access. Issued via Settings → API Keys.
+    OrgScope:
+      type: apiKey
+      in: header
+      name: x-org-id
+      description: Optional. Selects which organization a JWT- or API-key-authenticated request targets when the credential has access to multiple.

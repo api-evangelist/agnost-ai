@@ -1,0 +1,622 @@
+openapi: 3.0.3
+info:
+  title: Agnost AI Alerts Dashboard API
+  description: 'Complete REST API for Agnost AI: an analytics and monitoring platform for AI agents.
+
+
+    **Authentication**:
+
+    - SDK ingestion endpoints (`/api/v1/*`) use `x-org-id` header (UUID)
+
+    - Dashboard endpoints use `Authorization: Bearer <jwt>` + `x-org-id` header, or `x-api-key` header
+
+    - API key management uses JWT only (no API key auth)
+
+    '
+  version: 2.1.2
+  contact:
+    name: Agnost AI
+    url: https://agnost.ai
+servers:
+- url: https://api.agnost.ai
+  description: Production
+tags:
+- name: Dashboard
+  description: Analytics and metrics for the dashboard
+paths:
+  /dashboard/api/dashboard:
+    post:
+      tags:
+      - Dashboard
+      summary: Get dashboard metrics
+      operationId: getDashboardMetrics
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: Dashboard metrics including totals, daily stats, success rate
+  /dashboard/api/login-summary:
+    get:
+      tags:
+      - Dashboard
+      summary: Generate login summary
+      description: 'Generates a fresh 48-hour login summary for the selected organization.
+
+        The response is not persisted; dashboard clients request it after org
+
+        selection settles, then keep it in memory for the current page session.
+
+        If no recent data exists, the endpoint returns a generic `summary_text`
+
+        with an empty `sections` array.
+
+        '
+      operationId: getLoginSummary
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      parameters:
+      - name: org_id
+        in: query
+        required: false
+        description: Organization ID. Optional when org scope is supplied by JWT/API-key auth or `x-org-id`.
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Generated login summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  org_id:
+                    type: string
+                    format: uuid
+                  window_start:
+                    type: string
+                    format: date-time
+                  window_end:
+                    type: string
+                    format: date-time
+                  generated_at:
+                    type: string
+                    format: date-time
+                  summary_text:
+                    type: string
+                    description: LLM-written summary capped at 90 words, or a generic no-data fallback.
+                  sections:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        key:
+                          type: string
+                          example: errors
+                        title:
+                          type: string
+                          example: Critical errors
+                        href:
+                          type: string
+                          example: /errors
+                        items:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              title:
+                                type: string
+                              detail:
+                                type: string
+                              count:
+                                type: integer
+                              href:
+                                type: string
+              example:
+                id: 89d7ad7e-0248-4f98-abfa-1278ce5b7b4a
+                org_id: 5344ec46-cfc4-478a-805f-8c9d0b5ed66a
+                window_start: '2026-07-06T12:00:00Z'
+                window_end: '2026-07-08T12:00:00Z'
+                generated_at: '2026-07-08T12:00:00Z'
+                summary_text: Critical errors remained concentrated in policy checks and webhook probes, with feature-request and billing-dispute intents leading the last 48 hours.
+                sections:
+                - key: errors
+                  title: Critical errors
+                  href: /errors
+                  items:
+                  - title: policy_check
+                    detail: 4 critical errors in the last 48 hours
+                    count: 4
+                    href: /errors
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /dashboard/api/user-stories:
+    post:
+      tags:
+      - Dashboard
+      summary: Get user stories (conversations)
+      operationId: getUserStories
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: Recent conversations with event summaries
+  /dashboard/api/tool-stats:
+    post:
+      tags:
+      - Dashboard
+      summary: Get tool usage statistics
+      operationId: getToolStats
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: Tool usage breakdown
+  /dashboard/api/tool-checkpoint-stats:
+    post:
+      tags:
+      - Dashboard
+      summary: Get tool checkpoint timing stats
+      operationId: getToolCheckpointStats
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: Checkpoint timing statistics
+  /dashboard/api/tool-time-series:
+    post:
+      tags:
+      - Dashboard
+      summary: Get tool usage time series
+      operationId: getToolTimeSeries
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: Time-series data per tool
+  /dashboard/api/tool-error-distribution:
+    post:
+      tags:
+      - Dashboard
+      summary: Get error distribution by tool
+      operationId: getToolErrorDistribution
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: Error distribution data
+  /dashboard/api/errors:
+    post:
+      tags:
+      - Dashboard
+      summary: Get error events
+      operationId: getErrors
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: Paginated error list
+  /dashboard/api/errors/export:
+    post:
+      tags:
+      - Dashboard
+      summary: Export errors as CSV
+      operationId: exportErrors
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: CSV file download
+          content:
+            text/csv:
+              schema:
+                type: string
+  /dashboard/api/raw-logs:
+    post:
+      tags:
+      - Dashboard
+      summary: Get raw event logs
+      operationId: getRawLogs
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: Paginated raw log list
+  /dashboard/api/raw-logs/export:
+    post:
+      tags:
+      - Dashboard
+      summary: Export raw logs as CSV
+      operationId: exportRawLogs
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: CSV file download
+          content:
+            text/csv:
+              schema:
+                type: string
+  /dashboard/api/raw-logs/count:
+    post:
+      tags:
+      - Dashboard
+      summary: Get total count for raw logs query
+      description: 'Returns the total event count matching the same filters as `/raw-logs`,
+
+        served from the `event_daily_stats` materialized view for sub-second
+
+        latency. The frontend issues this in parallel with `/raw-logs` so the
+
+        page renders immediately and the total fills in when ready.
+
+
+        Returns `{"total_count": null}` when the filter set cannot be answered
+
+        by the materialized view (search query, client_config, connection_type,
+
+        or arbitrary metadata keys other than event_type).
+
+        '
+      operationId: getRawLogsCount
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: Total count, or null if filters are MV-incompatible
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_count:
+                    type: integer
+                    nullable: true
+  /dashboard/api/event-io:
+    post:
+      tags:
+      - Dashboard
+      summary: Get input/output for a specific event
+      operationId: getEventIO
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - event_id
+              properties:
+                event_id:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: Event input and output data
+  /dashboard/api/metadata-distribution:
+    post:
+      tags:
+      - Dashboard
+      summary: Get metadata key distribution
+      operationId: getMetadataDistribution
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: Distribution of metadata keys
+  /dashboard/api/command-center-summary:
+    post:
+      tags:
+      - Dashboard
+      summary: Get combined command center data
+      description: Combines metrics, user stories, errors, and tool stats in one call
+      operationId: getCommandCenterSummary
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: Combined dashboard data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  metrics:
+                    type: object
+                  user_stories:
+                    type: object
+                  errors:
+                    type: object
+                  tool_stats:
+                    type: array
+  /dashboard/api/tools-dashboard:
+    post:
+      tags:
+      - Dashboard
+      summary: Get combined tools dashboard data
+      description: Combines tool stats, time series, and saved charts
+      operationId: getToolsDashboard
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: Combined tools data
+  /dashboard/api/dashboard/charts:
+    get:
+      tags:
+      - Dashboard
+      summary: List saved dashboard charts
+      operationId: listDashboardCharts
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      responses:
+        '200':
+          description: List of chart configurations
+    post:
+      tags:
+      - Dashboard
+      summary: Create dashboard chart
+      operationId: createDashboardChart
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Chart created
+  /dashboard/api/dashboard/charts/{id}:
+    delete:
+      tags:
+      - Dashboard
+      summary: Delete dashboard chart
+      operationId: deleteDashboardChart
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: Chart deleted
+  /dashboard/api/dashboard/charts/reorder:
+    put:
+      tags:
+      - Dashboard
+      summary: Reorder dashboard charts
+      operationId: reorderDashboardCharts
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - chart_ids
+              properties:
+                chart_ids:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        '200':
+          description: Charts reordered
+components:
+  responses:
+    Forbidden:
+      description: No access to the requested organization
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    ServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: Invalid request body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    QueryFilters:
+      type: object
+      properties:
+        time_range:
+          $ref: '#/components/schemas/TimeRange'
+        connection_type:
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        agent_name:
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        metadata_filters:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+        page:
+          type: integer
+          default: 1
+        page_size:
+          type: integer
+          default: 20
+    TimeRange:
+      type: string
+      enum:
+      - 1min
+      - 1h
+      - 1d
+      - 1w
+      - 1m
+      - all
+      default: 1w
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+      - error
+      example:
+        error: Invalid request body
+  securitySchemes:
+    OrgId:
+      type: apiKey
+      in: header
+      name: x-org-id
+      description: Organization ID (UUID). Used by SDKs for event ingestion. Header is case-insensitive.
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token from OAuth login.
+    ApiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: API key (`agnost_<64-hex>`) for programmatic dashboard access. Issued via Settings → API Keys.
+    OrgScope:
+      type: apiKey
+      in: header
+      name: x-org-id
+      description: Optional. Selects which organization a JWT- or API-key-authenticated request targets when the credential has access to multiple.

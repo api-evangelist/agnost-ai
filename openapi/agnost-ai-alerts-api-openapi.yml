@@ -1,0 +1,456 @@
+openapi: 3.0.3
+info:
+  title: Agnost AI Alerts API
+  description: 'Complete REST API for Agnost AI: an analytics and monitoring platform for AI agents.
+
+
+    **Authentication**:
+
+    - SDK ingestion endpoints (`/api/v1/*`) use `x-org-id` header (UUID)
+
+    - Dashboard endpoints use `Authorization: Bearer <jwt>` + `x-org-id` header, or `x-api-key` header
+
+    - API key management uses JWT only (no API key auth)
+
+    '
+  version: 2.1.2
+  contact:
+    name: Agnost AI
+    url: https://agnost.ai
+servers:
+- url: https://api.agnost.ai
+  description: Production
+tags:
+- name: Alerts
+  description: Alert configuration and monitoring
+paths:
+  /dashboard/api/alerts:
+    get:
+      tags:
+      - Alerts
+      summary: List alerts
+      operationId: listAlerts
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      responses:
+        '200':
+          description: List of alert configurations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AlertConfig'
+    post:
+      tags:
+      - Alerts
+      summary: Create alert
+      operationId: createAlert
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AlertConfig'
+      responses:
+        '201':
+          description: Alert created
+  /dashboard/api/alerts/{id}:
+    get:
+      tags:
+      - Alerts
+      summary: Get alert by ID
+      operationId: getAlert
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Alert configuration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlertConfig'
+    put:
+      tags:
+      - Alerts
+      summary: Update alert
+      operationId: updateAlert
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AlertConfig'
+      responses:
+        '200':
+          description: Alert updated
+    delete:
+      tags:
+      - Alerts
+      summary: Delete alert
+      operationId: deleteAlert
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: Alert deleted
+  /dashboard/api/alerts/{id}/toggle:
+    post:
+      tags:
+      - Alerts
+      summary: Toggle alert active status
+      operationId: toggleAlert
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Alert toggled
+  /dashboard/api/alerts/{id}/history:
+    get:
+      tags:
+      - Alerts
+      summary: Get alert execution history
+      operationId: getAlertHistory
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Last 50 alert executions
+  /dashboard/api/alerts/generate-query:
+    post:
+      tags:
+      - Alerts
+      summary: Generate alert SQL from natural language (LLM)
+      operationId: generateAlertQuery
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - natural_language_query
+              properties:
+                natural_language_query:
+                  type: string
+      responses:
+        '200':
+          description: Generated SQL query
+  /dashboard/api/alerts/build-query:
+    post:
+      tags:
+      - Alerts
+      summary: Build alert SQL from structured params (no LLM)
+      operationId: buildAlertQuery
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - params
+              properties:
+                params:
+                  type: object
+      responses:
+        '200':
+          description: Built SQL query
+  /dashboard/api/alerts/test-query:
+    post:
+      tags:
+      - Alerts
+      summary: Test a SQL query and return results
+      operationId: testAlertQuery
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - sql_query
+              properties:
+                sql_query:
+                  type: string
+                query_type:
+                  type: string
+                  enum:
+                  - condition
+                  - action
+                  default: condition
+      responses:
+        '200':
+          description: Query results
+  /dashboard/api/alerts/{id}/test:
+    post:
+      tags:
+      - Alerts
+      summary: Send a test notification for an existing alert
+      description: 'Fires the alert''s notification action immediately, with sample/test
+
+        context, so the user can verify the wiring (Slack channel, email
+
+        recipients, message format) without waiting for the next scheduled
+
+        evaluation.
+
+        '
+      operationId: sendTestNotification
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Test notification sent
+  /dashboard/api/alerts/summarize-action:
+    post:
+      tags:
+      - Alerts
+      summary: LLM summarize action query results
+      operationId: summarizeAction
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - action_prompt
+              - rows
+              properties:
+                action_prompt:
+                  type: string
+                rows:
+                  type: string
+      responses:
+        '200':
+          description: Summary text
+  /dashboard/api/report-config:
+    get:
+      tags:
+      - Alerts
+      summary: Get report configuration
+      operationId: getReportConfig
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      responses:
+        '200':
+          description: Report configuration
+    put:
+      tags:
+      - Alerts
+      summary: Update report configuration
+      operationId: saveReportConfig
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Report config saved
+  /dashboard/api/alerts/query:
+    post:
+      tags:
+      - Alerts
+      summary: Unified alert query endpoint
+      description: 'Dispatches to generate, build, test, or summarize based on action field.
+
+        Replaces separate generate-query, build-query, test-query, and summarize-action endpoints.
+
+        '
+      operationId: alertQuery
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - action
+              properties:
+                action:
+                  type: string
+                  enum:
+                  - generate
+                  - build
+                  - test
+                  - summarize
+                natural_language_query:
+                  type: string
+                  description: For generate action
+                params:
+                  type: object
+                  description: For build action
+                sql_query:
+                  type: string
+                  description: For test action
+                query_type:
+                  type: string
+                  enum:
+                  - condition
+                  - action
+                  description: For test action
+                action_prompt:
+                  type: string
+                  description: For summarize action
+                rows:
+                  type: string
+                  description: For summarize action
+      responses:
+        '200':
+          description: Query operation results
+components:
+  schemas:
+    AlertConfig:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        event_type:
+          type: string
+        natural_language_query:
+          type: string
+        sql_query:
+          type: string
+        context_sql_query:
+          type: string
+        threshold_value:
+          type: number
+        threshold_operator:
+          type: string
+          enum:
+          - '>'
+          - <
+          - '>='
+          - <=
+          - ==
+        check_interval_hours:
+          type: integer
+        connection_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        recipient_emails:
+          type: array
+          items:
+            type: string
+        active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+  securitySchemes:
+    OrgId:
+      type: apiKey
+      in: header
+      name: x-org-id
+      description: Organization ID (UUID). Used by SDKs for event ingestion. Header is case-insensitive.
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token from OAuth login.
+    ApiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: API key (`agnost_<64-hex>`) for programmatic dashboard access. Issued via Settings → API Keys.
+    OrgScope:
+      type: apiKey
+      in: header
+      name: x-org-id
+      description: Optional. Selects which organization a JWT- or API-key-authenticated request targets when the credential has access to multiple.

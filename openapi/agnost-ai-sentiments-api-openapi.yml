@@ -1,0 +1,366 @@
+openapi: 3.0.3
+info:
+  title: Agnost AI Alerts Sentiments API
+  description: 'Complete REST API for Agnost AI: an analytics and monitoring platform for AI agents.
+
+
+    **Authentication**:
+
+    - SDK ingestion endpoints (`/api/v1/*`) use `x-org-id` header (UUID)
+
+    - Dashboard endpoints use `Authorization: Bearer <jwt>` + `x-org-id` header, or `x-api-key` header
+
+    - API key management uses JWT only (no API key auth)
+
+    '
+  version: 2.1.2
+  contact:
+    name: Agnost AI
+    url: https://agnost.ai
+servers:
+- url: https://api.agnost.ai
+  description: Production
+tags:
+- name: Sentiments
+  description: Sentiment and intent analysis
+paths:
+  /dashboard/api/sentiments:
+    get:
+      tags:
+      - Sentiments
+      summary: List sentiment configs
+      operationId: listSentiments
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      responses:
+        '200':
+          description: List of sentiment configurations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SentimentConfig'
+    post:
+      tags:
+      - Sentiments
+      summary: Create sentiment (intent) config
+      operationId: createSentiment
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - title
+              - description
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                active:
+                  type: boolean
+      responses:
+        '201':
+          description: Sentiment created
+  /dashboard/api/sentiments/{id}:
+    put:
+      tags:
+      - Sentiments
+      summary: Update sentiment config
+      operationId: updateSentiment
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                active:
+                  type: boolean
+      responses:
+        '200':
+          description: Sentiment updated
+    delete:
+      tags:
+      - Sentiments
+      summary: Delete sentiment config
+      operationId: deleteSentiment
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: Sentiment deleted
+  /dashboard/api/sentiment-stats:
+    post:
+      tags:
+      - Sentiments
+      summary: Get sentiment distribution stats
+      operationId: getSentimentStats
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryFilters'
+      responses:
+        '200':
+          description: Sentiment distribution with counts per tag
+  /dashboard/api/sentiment-messages:
+    post:
+      tags:
+      - Sentiments
+      summary: Get messages matching an active or suggested intent tag
+      description: Proactively suggested intents expose up to 20 stored evidence matches before approval. Active and suggested matches honor time_range and metadata filters.
+      operationId: getMessagesByTag
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/QueryFilters'
+              - type: object
+                required:
+                - tag
+                properties:
+                  tag:
+                    type: string
+      responses:
+        '200':
+          description: Active intent matches or suggested-intent evidence preview
+  /dashboard/api/sentiment-timeline:
+    post:
+      tags:
+      - Sentiments
+      summary: Get timeline for a single sentiment tag
+      operationId: getTagTimeline
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+              - $ref: '#/components/schemas/QueryFilters'
+              - type: object
+                required:
+                - tag
+                properties:
+                  tag:
+                    type: string
+      responses:
+        '200':
+          description: Daily event counts for the tag
+  /dashboard/api/sentiment-timelines:
+    post:
+      tags:
+      - Sentiments
+      summary: Get timelines for multiple tags (batch)
+      operationId: getBatchTagTimelines
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - tags
+              properties:
+                tags:
+                  type: array
+                  items:
+                    type: string
+                time_range:
+                  $ref: '#/components/schemas/TimeRange'
+      responses:
+        '200':
+          description: Timelines keyed by tag name
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  timelines:
+                    type: object
+                    additionalProperties:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          timestamp:
+                            type: string
+                          value:
+                            type: number
+  /dashboard/api/sentiment-tags:
+    get:
+      tags:
+      - Sentiments
+      summary: List organization sentiment/intent tags
+      operationId: getOrganizationTags
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      responses:
+        '200':
+          description: Array of tag names
+  /dashboard/api/summarize-intent-distribution:
+    post:
+      tags:
+      - Sentiments
+      summary: LLM summary of an intent distribution
+      description: 'Pulls user inputs matching the given intent within the time range and
+
+        produces a natural-language summary via the LLM.
+
+        '
+      operationId: summarizeIntentDistribution
+      security:
+      - BearerAuth: []
+        OrgScope: []
+      - ApiKey: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - tag
+              properties:
+                org_id:
+                  type: string
+                  format: uuid
+                tag:
+                  type: string
+                  description: Intent title to summarize
+                time_range:
+                  $ref: '#/components/schemas/TimeRange'
+      responses:
+        '200':
+          description: Natural-language summary
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  summary:
+                    type: string
+components:
+  schemas:
+    QueryFilters:
+      type: object
+      properties:
+        time_range:
+          $ref: '#/components/schemas/TimeRange'
+        connection_type:
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        agent_name:
+          oneOf:
+          - type: string
+          - type: array
+            items:
+              type: string
+        metadata_filters:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              value:
+                type: string
+        page:
+          type: integer
+          default: 1
+        page_size:
+          type: integer
+          default: 20
+    SentimentConfig:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        active:
+          type: boolean
+    TimeRange:
+      type: string
+      enum:
+      - 1min
+      - 1h
+      - 1d
+      - 1w
+      - 1m
+      - all
+      default: 1w
+  securitySchemes:
+    OrgId:
+      type: apiKey
+      in: header
+      name: x-org-id
+      description: Organization ID (UUID). Used by SDKs for event ingestion. Header is case-insensitive.
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token from OAuth login.
+    ApiKey:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: API key (`agnost_<64-hex>`) for programmatic dashboard access. Issued via Settings → API Keys.
+    OrgScope:
+      type: apiKey
+      in: header
+      name: x-org-id
+      description: Optional. Selects which organization a JWT- or API-key-authenticated request targets when the credential has access to multiple.

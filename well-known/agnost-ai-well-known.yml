@@ -1,0 +1,37 @@
+generated: '2026-07-18'
+method: searched
+source: live probes of /.well-known/* across Agnost hosts
+# The hosted MCP server publishes real RFC 8414 + RFC 9728 discovery documents
+# (OAuth 2.1). The marketing site and dashboard SPA return an HTML catch-all for
+# unknown /.well-known/* paths (recorded as spa-catchall, not a real document).
+hosts:
+- host: https://mcp.agnost.ai
+  documents:
+  - path: /.well-known/oauth-authorization-server   # RFC 8414
+    status: 200
+    file: agnost-ai-oauth-authorization-server.json
+  - path: /.well-known/oauth-protected-resource      # RFC 9728
+    status: 200
+    file: agnost-ai-oauth-protected-resource.json
+  - path: /.well-known/openid-configuration
+    status: 404
+- host: https://agnost.ai
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+- host: https://docs.agnost.ai
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+- host: https://app.agnost.ai
+  documents:
+  - path: /.well-known/openid-configuration
+    status: 200
+    note: spa-catchall (HTML, not a real OIDC discovery document)
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    note: spa-catchall (HTML, not a real RFC 8414 document)

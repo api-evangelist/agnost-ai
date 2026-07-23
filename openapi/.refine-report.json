@@ -1,0 +1,40 @@
+{
+  "provider": "agnost-ai",
+  "sources": [
+    "agnost-ai-alerts-api-openapi.yml",
+    "agnost-ai-api-keys-api-openapi.yml",
+    "agnost-ai-auth-api-openapi.yml",
+    "agnost-ai-billing-api-openapi.yml",
+    "agnost-ai-classification-api-openapi.yml",
+    "agnost-ai-connections-api-openapi.yml",
+    "agnost-ai-conversations-api-openapi.yml",
+    "agnost-ai-dashboard-api-openapi.yml",
+    "agnost-ai-onboarding-api-openapi.yml",
+    "agnost-ai-organizations-api-openapi.yml",
+    "agnost-ai-sdk-api-openapi.yml",
+    "agnost-ai-sentiments-api-openapi.yml",
+    "agnost-ai-sops-api-openapi.yml",
+    "agnost-ai-system-api-openapi.yml"
+  ],
+  "outputs": [
+    "agnost-ai-alerts-api-openapi.yml",
+    "agnost-ai-api-keys-api-openapi.yml",
+    "agnost-ai-auth-api-openapi.yml",
+    "agnost-ai-billing-api-openapi.yml",
+    "agnost-ai-classification-api-openapi.yml",
+    "agnost-ai-connections-api-openapi.yml",
+    "agnost-ai-conversations-api-openapi.yml",
+    "agnost-ai-dashboard-api-openapi.yml",
+    "agnost-ai-onboarding-api-openapi.yml",
+    "agnost-ai-organizations-api-openapi.yml",
+    "agnost-ai-sdk-api-openapi.yml",
+    "agnost-ai-sentiments-api-openapi.yml",
+    "agnost-ai-sops-api-openapi.yml",
+    "agnost-ai-system-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}

@@ -1,0 +1,43 @@
+generated: '2026-07-18'
+method: searched
+source: https://docs.agnost.ai/sdks + npm/PyPI registries
+packages:
+- language: python
+  registry: pypi
+  name: agnost
+  url: https://pypi.org/project/agnost/
+  install: pip install agnost
+  official: true
+  role: Python conversation SDK (track AI interactions with begin()/end() / track_ai())
+  repository: https://github.com/agnostai/agnostai
+- language: python
+  registry: pypi
+  name: agnost-mcp
+  url: https://pypi.org/project/agnost-mcp/
+  install: pip install agnost-mcp
+  official: true
+  role: Analytics SDK for Model Context Protocol servers (FastMCP / Python MCP)
+  repository: https://github.com/agnostai/agnostai
+- language: javascript
+  registry: npm
+  name: agnostai
+  url: https://www.npmjs.com/package/agnostai
+  install: npm install agnostai
+  official: true
+  role: TypeScript/Node conversation SDK (track agent conversations, automatic latency)
+  repository: https://github.com/agnost-ai/agnost-ai
+- language: javascript
+  registry: npm
+  name: agnost
+  url: https://www.npmjs.com/package/agnost
+  install: npm install agnost
+  official: true
+  role: TypeScript/Node analytics SDK for MCP servers (trackMCP, createConfig, checkpoint)
+- language: go
+  registry: pkg.go.dev
+  name: github.com/agnostai/agnost-go/agnost
+  url: https://pkg.go.dev/github.com/agnostai/agnost-go/agnost
+  install: go get github.com/agnostai/agnost-go/agnost
+  official: true
+  role: Go MCP SDK
+  repository: https://github.com/agnostai/agnost-go

@@ -1,0 +1,45 @@
+# Agnost AI
+
+## Docs
+
+- [Agnost MCP Server](https://docs.agnost.ai/agnost-mcp-server.md): Query your Agnost dashboard from Claude Desktop, Cursor, and any MCP client
+- [Python Anthropic SDK (low-level)](https://docs.agnost.ai/anthropic-low-level.md): Add Agnost AI analytics to your low-level Anthropic MCP server
+- [Apify Actors](https://docs.agnost.ai/apify.md): Add Agnost AI analytics to your Apify Actors
+- [Authentication](https://docs.agnost.ai/authentication.md): How Agnost authenticates ingestion, dashboard, and API requests
+- [Capture Event](https://docs.agnost.ai/capture-event.md): Record one turn-pair or tool call within a session
+- [Capture Session](https://docs.agnost.ai/capture-session.md): Start a session at the beginning of a conversation
+- [Configuration](https://docs.agnost.ai/configuration.md): Configure the Agnost AI Python SDK for conversation tracking
+- [Getting Started](https://docs.agnost.ai/conversation-quickstart.md): Track AI conversations and interactions with Agnost AI
+- [Conversational Agents](https://docs.agnost.ai/conversational-overview.md): Track every AI interaction your agent makes: latency, inputs, outputs, and users
+- [Data Governance](https://docs.agnost.ai/data-governance.md): How to send production conversation data to Agnost while minimizing sensitive data exposure
+- [Errors](https://docs.agnost.ai/errors.md): Common API and ingestion errors
+- [Python FastMCP](https://docs.agnost.ai/fastmcp.md): Add Agnost AI analytics to your FastMCP server
+- [Go MCP SDK](https://docs.agnost.ai/golang-sdk.md): Add Agnost AI analytics to your Go MCP server
+- [What is Agnost AI?](https://docs.agnost.ai/index.md): Production monitoring that catches AI agent failures your evals miss
+- [MCP Servers](https://docs.agnost.ai/mcp-overview.md): Add observability to any MCP server with one line of code
+- [MCP Toolbox for Databases](https://docs.agnost.ai/mcp-toolbox.md): Add Agnost AI analytics to Google's MCP Toolbox for Databases
+- [OpenTelemetry (OTel)](https://docs.agnost.ai/otel.md): Send traces from any OTel-instrumented AI framework directly to Agnost AI
+- [Agno](https://docs.agnost.ai/otel-agno.md): Capture traces from Agno agents and teams
+- [Anthropic SDK (Python)](https://docs.agnost.ai/otel-anthropic.md): Capture traces from the Anthropic Python SDK with OpenInference
+- [CrewAI](https://docs.agnost.ai/otel-crewai.md): Capture traces from CrewAI crews with OpenLit
+- [DSPy](https://docs.agnost.ai/otel-dspy.md): Capture traces from DSPy modules and optimizers
+- [LangChain](https://docs.agnost.ai/otel-langchain.md): Capture traces from LangChain / LangGraph via LangSmith's OTel mode
+- [Mastra](https://docs.agnost.ai/otel-mastra.md): Capture traces from Mastra agents with the Observability + OtelExporter API
+- [MCP Toolbox for Databases](https://docs.agnost.ai/otel-mcp-toolbox.md): Send MCP Toolbox traces to Agnost over OTLP
+- [OpenAI SDK](https://docs.agnost.ai/otel-openai.md): Capture traces from the OpenAI Python or TypeScript SDK with OpenInference
+- [OpenAI Agents SDK](https://docs.agnost.ai/otel-openai-agents.md): Capture traces from the OpenAI Agents SDK over OTLP
+- [Pydantic AI](https://docs.agnost.ai/otel-pydantic-ai.md): Capture traces from Pydantic AI by pointing Logfire at Agnost
+- [Spectrum-TS](https://docs.agnost.ai/otel-spectrum-ts.md): Capture traces from Photon Spectrum-TS with native OpenTelemetry telemetry
+- [Vercel AI SDK](https://docs.agnost.ai/otel-vercel-ai.md): Capture traces from the Vercel AI SDK with experimental_telemetry
+- [VoltAgent](https://docs.agnost.ai/otel-voltagent.md): Capture traces from VoltAgent agents over OTLP
+- [Python Conversation SDK](https://docs.agnost.ai/python-conversation.md): Track any AI interaction with begin() / end()
+- [Quickstart](https://docs.agnost.ai/quickstart.md): Send your first AI interaction to Agnost AI
+- [Roadmap](https://docs.agnost.ai/roadmap.md): Product roadmap for Agnost AI
+- [SDKs](https://docs.agnost.ai/sdks.md): Agnost SDKs and when to use each one
+- [Security & Trust](https://docs.agnost.ai/security.md): Security, privacy, and procurement guidance for Agnost AI
+- [TypeScript Conversation SDK](https://docs.agnost.ai/typescript-conversation.md): Track any AI interaction with begin() / end()
+- [TypeScript MCP SDK](https://docs.agnost.ai/typescript-sdk.md): Add Agnost AI analytics to your TypeScript MCP server
+
+## OpenAPI Specs
+
+- [openapi](https://docs.agnost.ai/openapi.yaml)

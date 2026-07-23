@@ -1,0 +1,21 @@
+generated: '2026-07-18'
+method: searched
+source: https://docs.agnost.ai + https://status.agnost.ai + openapi/agnost-ai-openapi-original.yml
+versioning:
+  api_spec_version: 2.1.2
+  path_scheme: uri-path
+  ingestion_prefix: /api/v1
+  notes: SDK ingestion endpoints are versioned under /api/v1; dashboard endpoints under /dashboard/api.
+status_page:
+  url: https://status.agnost.ai
+  platform: Better Stack
+roadmap:
+  url: https://docs.agnost.ai/roadmap
+deprecation:
+  policy_url: null
+  sunset_header: false
+  notes: No formal deprecation/Sunset (RFC 8594) policy published; no deprecated operations declared in the OpenAPI.
+deprecated_operations: []
+support:
+  contact: founders@agnost.ai
+  call: https://call.agnost.ai
