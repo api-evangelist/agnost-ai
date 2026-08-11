@@ -272,6 +272,8 @@ apis:
   - type: ErrorCatalog
     url: https://docs.agnost.ai/errors
 common:
+- type: Overlay
+  url: overlays/agnost-ai-openapi-overlay.yaml
 - url: https://docs.agnost.ai
   type: DeveloperPortal
 - url: https://docs.agnost.ai
