@@ -1,0 +1,96 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Agnost AI Alerts Connections API",
+    "version": "2.1.2"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Connections",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List connections",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.agnost.ai/dashboard/api/connections",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "List connections"
+        },
+        {
+          "info": {
+            "name": "Initiate Slack OAuth flow",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/connections/initiate-slack",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Initiate Slack OAuth flow"
+        },
+        {
+          "info": {
+            "name": "Delete connection",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.agnost.ai/dashboard/api/connections/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Delete connection"
+        },
+        {
+          "info": {
+            "name": "Send message via Slack connection",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/connections/:id/send-message",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Send message via Slack connection"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

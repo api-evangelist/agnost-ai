@@ -1,0 +1,348 @@
+{
+  "item": [
+    {
+      "id": "71cbebeb-9500-47ed-ab6d-cb1d42e41fa3",
+      "name": "SDK",
+      "description": {
+        "content": "Event ingestion endpoints used by SDKs",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "0dba457a-305d-48ff-8b51-fb51b4b8e9d8",
+          "name": "Capture session",
+          "request": {
+            "name": "Capture session",
+            "description": {
+              "content": "Start a session. Call once per conversation; reuse `session_id` on every event.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v1",
+                "capture-session"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "(Required) Your organization ID (UUID, case-insensitive).",
+                "key": "x-org-id",
+                "value": "<string>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"session_id\": \"<uuid>\",\n  \"user_data\": {\n    \"user_id\": \"<string>\"\n  },\n  \"metadata\": {\n    \"key_0\": \"<string>\"\n  },\n  \"timestamp\": \"<long>\",\n  \"client_config\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "7ce48850-9ba5-448f-86ee-fcb99a926fd4",
+              "name": "Session created",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "capture-session"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "disabled": false,
+                    "description": "(Required) Your organization ID (UUID, case-insensitive).",
+                    "key": "x-org-id",
+                    "value": "<org-id>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"session_id\": \"a3f9c182-7d4e-4b6a-9e21-c5d8f0b4e731\",\n  \"user_data\": {\n    \"user_id\": \"user-anon-002\",\n    \"email\": \"user@example.com\",\n    \"user_plan\": \"pro\"\n  },\n  \"metadata\": {\n    \"language\": \"hi-IN\"\n  },\n  \"timestamp\": 1714867200000,\n  \"client_config\": \"client-segment-001\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"session_id\": \"string\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "f981657d-e78a-404d-8532-457e7cf91bd7",
+              "name": "Invalid request body",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "capture-session"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "disabled": false,
+                    "description": "(Required) Your organization ID (UUID, case-insensitive).",
+                    "key": "x-org-id",
+                    "value": "<org-id>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"session_id\": \"a3f9c182-7d4e-4b6a-9e21-c5d8f0b4e731\",\n  \"user_data\": {\n    \"user_id\": \"user-anon-002\",\n    \"email\": \"user@example.com\",\n    \"user_plan\": \"pro\"\n  },\n  \"metadata\": {\n    \"language\": \"hi-IN\"\n  },\n  \"timestamp\": 1714867200000,\n  \"client_config\": \"client-segment-001\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"Invalid request body\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "a02d2e91-3470-4b23-9052-8d1ad512c958",
+          "name": "Capture event",
+          "request": {
+            "name": "Capture event",
+            "description": {
+              "content": "Record one turn-pair or tool call. Generate `event_id` client-side so children can reference parents.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "api",
+                "v1",
+                "capture-event"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "disabled": false,
+                "description": "(Required) Your organization ID (UUID, case-insensitive).",
+                "key": "x-org-id",
+                "value": "<string>"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event_id\": \"<uuid>\",\n  \"session_id\": \"<uuid>\",\n  \"primitive_name\": \"<string>\",\n  \"args\": \"<string>\",\n  \"result\": \"<string>\",\n  \"success\": \"<boolean>\",\n  \"latency\": \"<integer>\",\n  \"timestamp\": \"<long>\",\n  \"parent_id\": \"<uuid>\",\n  \"metadata\": {\n    \"key_0\": \"<string>\",\n    \"key_1\": \"<string>\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "337804a3-373d-4712-add1-f7c87d611bec",
+              "name": "Event recorded",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "capture-event"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "disabled": false,
+                    "description": "(Required) Your organization ID (UUID, case-insensitive).",
+                    "key": "x-org-id",
+                    "value": "<org-id>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"event_id\": \"e8b1c52f-3a9d-4e7c-8f0b-2d6a91c4ef58\",\n  \"session_id\": \"a3f9c182-7d4e-4b6a-9e21-c5d8f0b4e731\",\n  \"primitive_name\": \"your-agent-name\",\n  \"args\": \"your input in plain text or JSON-encoded string\",\n  \"result\": \"your output in plain text or JSON-encoded string\",\n  \"success\": \"<boolean>\",\n  \"latency\": 5200,\n  \"timestamp\": 1714867201000,\n  \"parent_id\": \"4c7d2e8a-1b95-4f3d-a08e-7b3c9d12f5e6\",\n  \"metadata\": {\n    \"language\": \"hi-IN\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"event_id\": \"7bfb0bf9-e13c-b21d-3adb-8e9d69b2169d\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "487a51af-91f7-4b5a-b56a-9d26856d0a15",
+              "name": "Invalid request body",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "api",
+                    "v1",
+                    "capture-event"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "disabled": false,
+                    "description": "(Required) Your organization ID (UUID, case-insensitive).",
+                    "key": "x-org-id",
+                    "value": "<org-id>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"event_id\": \"e8b1c52f-3a9d-4e7c-8f0b-2d6a91c4ef58\",\n  \"session_id\": \"a3f9c182-7d4e-4b6a-9e21-c5d8f0b4e731\",\n  \"primitive_name\": \"your-agent-name\",\n  \"args\": \"your input in plain text or JSON-encoded string\",\n  \"result\": \"your output in plain text or JSON-encoded string\",\n  \"success\": \"<boolean>\",\n  \"latency\": 5200,\n  \"timestamp\": 1714867201000,\n  \"parent_id\": \"4c7d2e8a-1b95-4f3d-a08e-7b3c9d12f5e6\",\n  \"metadata\": {\n    \"language\": \"hi-IN\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"Invalid request body\"\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.agnost.ai",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "0d451576-b6df-40d1-900a-a0afa1dc250e",
+    "name": "Agnost AI Alerts SDK API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Complete REST API for Agnost AI: an analytics and monitoring platform for AI agents.\n\n**Authentication**:\n- SDK ingestion endpoints (`/api/v1/*`) use `x-org-id` header (UUID)\n- Dashboard endpoints use `Authorization: Bearer <jwt>` + `x-org-id` header, or `x-api-key` header\n- API key management uses JWT only (no API key auth)\n\n\nContact Support:\n Name: Agnost AI",
+      "type": "text/plain"
+    }
+  }
+}

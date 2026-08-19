@@ -1,0 +1,63 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Agnost AI Alerts Billing API",
+    "version": "2.1.2"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Billing",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Create Stripe checkout session",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/billing/create-checkout",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Create Stripe checkout session"
+        },
+        {
+          "info": {
+            "name": "Create Stripe billing portal session",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/billing/create-portal",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Create Stripe billing portal session"
+        },
+        {
+          "info": {
+            "name": "Cancel subscription",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/billing/cancel",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Cancel subscription"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,135 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Agnost AI Alerts Conversations API",
+    "version": "2.1.2"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Conversations",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get conversation messages",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/conversation-messages",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get conversation messages"
+        },
+        {
+          "info": {
+            "name": "Get conversation spans (trace)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/conversation-spans",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get conversation spans (trace)"
+        },
+        {
+          "info": {
+            "name": "Get a presigned URL for a conversation's recorded audio",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.agnost.ai/dashboard/api/conversation-audio",
+            "params": [
+              {
+                "name": "conversation_id",
+                "value": "",
+                "type": "query"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns a short-lived presigned URL the dashboard uses to play back\nrecorded audio for a voice conversation. The audio is stored in\nobject storage and only addressable through this endpoint.\n"
+        },
+        {
+          "info": {
+            "name": "Get conversation detail (messages + spans combined)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/conversation-detail",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get conversation detail (messages + spans combined)"
+        },
+        {
+          "info": {
+            "name": "Semantic search across conversations",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/spotlight-search",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Semantic search across conversations"
+        },
+        {
+          "info": {
+            "name": "Extract intent keywords",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/intent-keywords",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Extract intent keywords"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

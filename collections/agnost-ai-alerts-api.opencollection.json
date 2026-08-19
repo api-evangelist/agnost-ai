@@ -1,0 +1,321 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Agnost AI Alerts API",
+    "version": "2.1.2"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Alerts",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List alerts",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.agnost.ai/dashboard/api/alerts",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "List alerts"
+        },
+        {
+          "info": {
+            "name": "Create alert",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/alerts",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Create alert"
+        },
+        {
+          "info": {
+            "name": "Get alert by ID",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.agnost.ai/dashboard/api/alerts/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get alert by ID"
+        },
+        {
+          "info": {
+            "name": "Update alert",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.agnost.ai/dashboard/api/alerts/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Update alert"
+        },
+        {
+          "info": {
+            "name": "Delete alert",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.agnost.ai/dashboard/api/alerts/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Delete alert"
+        },
+        {
+          "info": {
+            "name": "Toggle alert active status",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/alerts/:id/toggle",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Toggle alert active status"
+        },
+        {
+          "info": {
+            "name": "Get alert execution history",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.agnost.ai/dashboard/api/alerts/:id/history",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get alert execution history"
+        },
+        {
+          "info": {
+            "name": "Generate alert SQL from natural language (LLM)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/alerts/generate-query",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Generate alert SQL from natural language (LLM)"
+        },
+        {
+          "info": {
+            "name": "Build alert SQL from structured params (no LLM)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/alerts/build-query",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Build alert SQL from structured params (no LLM)"
+        },
+        {
+          "info": {
+            "name": "Test a SQL query and return results",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/alerts/test-query",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Test a SQL query and return results"
+        },
+        {
+          "info": {
+            "name": "Send a test notification for an existing alert",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/alerts/:id/test",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Fires the alert's notification action immediately, with sample/test\ncontext, so the user can verify the wiring (Slack channel, email\nrecipients, message format) without waiting for the next scheduled\nevaluation.\n"
+        },
+        {
+          "info": {
+            "name": "LLM summarize action query results",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/alerts/summarize-action",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "LLM summarize action query results"
+        },
+        {
+          "info": {
+            "name": "Get report configuration",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.agnost.ai/dashboard/api/report-config",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get report configuration"
+        },
+        {
+          "info": {
+            "name": "Update report configuration",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.agnost.ai/dashboard/api/report-config",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Update report configuration"
+        },
+        {
+          "info": {
+            "name": "Unified alert query endpoint",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/alerts/query",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Dispatches to generate, build, test, or summarize based on action field.\nReplaces separate generate-query, build-query, test-query, and summarize-action endpoints.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

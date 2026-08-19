@@ -1,0 +1,443 @@
+{
+  "item": [
+    {
+      "id": "9bda42e1-2bde-4bd7-918b-fe2887261d1a",
+      "name": "Classification",
+      "description": {
+        "content": "LLM-based classification operations",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "df609ca5-67c9-48e4-b4b8-7231cf11dc79",
+          "name": "Run intent classification on conversations",
+          "request": {
+            "name": "Run intent classification on conversations",
+            "description": {},
+            "url": {
+              "path": [
+                "dashboard",
+                "api",
+                "run-intent-classification"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"time_range\": \"1w\",\n  \"connection_type\": \"<string>\",\n  \"agent_name\": \"<string>\",\n  \"metadata_filters\": [\n    {\n      \"key\": \"<string>\",\n      \"value\": \"<string>\"\n    },\n    {\n      \"key\": \"<string>\",\n      \"value\": \"<string>\"\n    }\n  ],\n  \"page\": 1,\n  \"page_size\": 20\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "39810293-39ff-4f5a-8223-9c7e5d3a2647",
+              "name": "Classification results",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "dashboard",
+                    "api",
+                    "run-intent-classification"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"time_range\": \"1w\",\n  \"connection_type\": \"<string>\",\n  \"agent_name\": \"<string>\",\n  \"metadata_filters\": [\n    {\n      \"key\": \"<string>\",\n      \"value\": \"<string>\"\n    },\n    {\n      \"key\": \"<string>\",\n      \"value\": \"<string>\"\n    }\n  ],\n  \"page\": 1,\n  \"page_size\": 20\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "b5ae1487-b4c7-4244-80e7-d62fb5fd2636",
+          "name": "Run SOP classification on conversations",
+          "request": {
+            "name": "Run SOP classification on conversations",
+            "description": {},
+            "url": {
+              "path": [
+                "dashboard",
+                "api",
+                "run-sop-classification"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"time_range\": \"1w\",\n  \"connection_type\": \"<string>\",\n  \"agent_name\": \"<string>\",\n  \"metadata_filters\": [\n    {\n      \"key\": \"<string>\",\n      \"value\": \"<string>\"\n    },\n    {\n      \"key\": \"<string>\",\n      \"value\": \"<string>\"\n    }\n  ],\n  \"page\": 1,\n  \"page_size\": 20\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "3dc170b6-403f-4a74-91ea-bc9bb1a184ce",
+              "name": "SOP classification results",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "dashboard",
+                    "api",
+                    "run-sop-classification"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"time_range\": \"1w\",\n  \"connection_type\": \"<string>\",\n  \"agent_name\": \"<string>\",\n  \"metadata_filters\": [\n    {\n      \"key\": \"<string>\",\n      \"value\": \"<string>\"\n    },\n    {\n      \"key\": \"<string>\",\n      \"value\": \"<string>\"\n    }\n  ],\n  \"page\": 1,\n  \"page_size\": 20\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "0ea52008-6aef-4e2a-b7b2-593f601845ea",
+          "name": "Run LLM-based spotlight query (SSE streaming)",
+          "request": {
+            "name": "Run LLM-based spotlight query (SSE streaming)",
+            "description": {},
+            "url": {
+              "path": [
+                "dashboard",
+                "api",
+                "run-spotlight-query"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "text/event-stream"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"<string>\",\n  \"time_range\": \"1w\",\n  \"connection_type\": \"<string>\",\n  \"agent_name\": \"<string>\",\n  \"metadata_filters\": [\n    {\n      \"key\": \"<string>\",\n      \"value\": \"<string>\"\n    },\n    {\n      \"key\": \"<string>\",\n      \"value\": \"<string>\"\n    }\n  ],\n  \"page\": 1,\n  \"page_size\": 20\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "6f6acccb-8b7a-48e1-9a0e-dd44fb1ce171",
+              "name": "SSE stream of classification results",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "dashboard",
+                    "api",
+                    "run-spotlight-query"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "text/event-stream"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"query\": \"<string>\",\n  \"time_range\": \"1w\",\n  \"connection_type\": \"<string>\",\n  \"agent_name\": \"<string>\",\n  \"metadata_filters\": [\n    {\n      \"key\": \"<string>\",\n      \"value\": \"<string>\"\n    },\n    {\n      \"key\": \"<string>\",\n      \"value\": \"<string>\"\n    }\n  ],\n  \"page\": 1,\n  \"page_size\": 20\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/event-stream"
+                }
+              ],
+              "body": "string",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "5735d046-8ea7-436e-acfc-a44c28553447",
+          "name": "Unified classification endpoint",
+          "request": {
+            "name": "Unified classification endpoint",
+            "description": {
+              "content": "Dispatches to intent, SOP, or spotlight classification based on type field.\nReplaces separate run-intent-classification, run-sop-classification, and run-spotlight-query endpoints.\n",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "dashboard",
+                "api",
+                "classify"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"<string>\",\n  \"time_range\": \"1w\",\n  \"connection_type\": \"<string>\",\n  \"agent_name\": \"<string>\",\n  \"metadata_filters\": [\n    {\n      \"key\": \"<string>\",\n      \"value\": \"<string>\"\n    },\n    {\n      \"key\": \"<string>\",\n      \"value\": \"<string>\"\n    }\n  ],\n  \"page\": 1,\n  \"page_size\": 20,\n  \"query\": \"<string>\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "f3c2e27e-2e1c-4455-9dcb-36a314e8305b",
+              "name": "Classification results",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "dashboard",
+                    "api",
+                    "classify"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"type\": \"<string>\",\n  \"time_range\": \"1w\",\n  \"connection_type\": \"<string>\",\n  \"agent_name\": \"<string>\",\n  \"metadata_filters\": [\n    {\n      \"key\": \"<string>\",\n      \"value\": \"<string>\"\n    },\n    {\n      \"key\": \"<string>\",\n      \"value\": \"<string>\"\n    }\n  ],\n  \"page\": 1,\n  \"page_size\": 20,\n  \"query\": \"<string>\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.agnost.ai",
+      "key": "baseUrl"
+    }
+  ],
+  "info": {
+    "_postman_id": "8e5f6a30-78d6-4be3-86b4-6661da6c2f4e",
+    "name": "Agnost AI Alerts Classification API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Complete REST API for Agnost AI: an analytics and monitoring platform for AI agents.\n\n**Authentication**:\n- SDK ingestion endpoints (`/api/v1/*`) use `x-org-id` header (UUID)\n- Dashboard endpoints use `Authorization: Bearer <jwt>` + `x-org-id` header, or `x-api-key` header\n- API key management uses JWT only (no API key auth)\n\n\nContact Support:\n Name: Agnost AI",
+      "type": "text/plain"
+    }
+  }
+}

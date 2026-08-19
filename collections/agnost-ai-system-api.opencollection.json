@@ -1,0 +1,44 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Agnost AI Alerts System API",
+    "version": "2.1.2"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "System",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Health check",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.agnost.ai/healthz"
+          },
+          "docs": "Health check"
+        },
+        {
+          "info": {
+            "name": "Stripe webhook",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/webhooks/stripe",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Verified via Stripe-Signature header"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

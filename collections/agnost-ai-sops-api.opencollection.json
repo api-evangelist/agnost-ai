@@ -1,0 +1,214 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Agnost AI Alerts SOPs API",
+    "version": "2.1.2"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "SOPs",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List SOPs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.agnost.ai/dashboard/api/sops",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "List SOPs"
+        },
+        {
+          "info": {
+            "name": "Create SOP",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/sops",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Create SOP"
+        },
+        {
+          "info": {
+            "name": "Update SOP",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.agnost.ai/dashboard/api/sops/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Update SOP"
+        },
+        {
+          "info": {
+            "name": "Delete SOP",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.agnost.ai/dashboard/api/sops/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Delete SOP"
+        },
+        {
+          "info": {
+            "name": "Get SOP violation events",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/sop-violations",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get SOP violation events"
+        },
+        {
+          "info": {
+            "name": "Get SOP violation distribution stats",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/sop-stats",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Mirrors `/sentiment-stats`. Returns total analyzed events, total events\nin the time range, top violating SOPs, and the full SOP distribution.\n"
+        },
+        {
+          "info": {
+            "name": "Get assistant messages matching a specific SOP violation",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/sop-messages",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Mirrors `/sentiment-messages`, but matches on the assistant output rather\nthan the user input. The `tag` field is the SOP title to filter on.\n"
+        },
+        {
+          "info": {
+            "name": "Get timeline for a single SOP violation",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/sop-timeline",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Mirrors `/sentiment-timeline`. Bucketing is automatic based on the time range."
+        },
+        {
+          "info": {
+            "name": "Get per-SOP timelines for multiple SOP titles in a single call",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/sop-timelines",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Mirrors `/sentiment-timelines`. Pass an array of SOP titles in `tags`."
+        },
+        {
+          "info": {
+            "name": "LLM summary of why a SOP is being violated",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/summarize-sop-distribution",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Pulls assistant outputs that violated the given SOP within the time\nrange and produces a natural-language summary via the LLM. Mirrors\n`/summarize-intent-distribution`.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

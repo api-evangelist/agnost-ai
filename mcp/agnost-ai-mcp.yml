@@ -4,33 +4,30 @@ status: published
 source: https://docs.agnost.ai/agnost-mcp-server
 server:
   name: agnost-ai
-  transport: http                      # streamable-HTTP MCP
+  transport: http
   url: https://mcp.agnost.ai/mcp
   auth:
     type: oauth2.1
-    dynamic_client_registration: true  # RFC 7591
+    dynamic_client_registration: true
     authorization_server: https://mcp.agnost.ai/
     protected_resource_metadata: https://mcp.agnost.ai/.well-known/oauth-protected-resource
     authorization_server_metadata: https://mcp.agnost.ai/.well-known/oauth-authorization-server
-    scopes: [agnost]
+    scopes:
+    - agnost
     identity_provider: Google (via Agnost dashboard)
 client_config:
   mcpServers:
     agnost-ai:
       url: https://mcp.agnost.ai/mcp
-description: >-
-  Hosted, OAuth-protected MCP server that lets any MCP-aware client (Claude
-  Desktop, Cursor, streamable-HTTP + OAuth 2.1 clients) query an Agnost
-  dashboard in natural language: errors, intents, conversations, SOPs,
-  sentiments, and more. No API keys or copied tokens; first tool call triggers a
-  browser OAuth sign-in.
+description: 'Hosted, OAuth-protected MCP server that lets any MCP-aware client (Claude Desktop, Cursor,
+  streamable-HTTP + OAuth 2.1 clients) query an Agnost dashboard in natural language: errors, intents,
+  conversations, SOPs, sentiments, and more. No API keys or copied tokens; first tool call triggers a
+  browser OAuth sign-in.'
 example_prompts:
 - Which tools are failing most often this week?
 - Show me recent conversations with repeated user frustration.
 - Which SOPs were violated today?
 - Summarize the top intents in this org.
-# The dashboard capabilities exposed by the MCP server map onto these REST
-# dashboard operations (openapi/agnost-ai-openapi-original.yml):
 backing_operations:
 - getErrors
 - getToolErrorDistribution
@@ -40,3 +37,10 @@ backing_operations:
 - getSOPViolations
 - listSentiments
 - summarizeIntentDistribution
+deployment:
+  mode: remote
+  endpoint: https://mcp.agnost.ai/mcp
+  verified: probed
+  probe: gated
+  checked: '2026-08-12'
+  source: catalog MCP census

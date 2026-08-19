@@ -1,0 +1,401 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Agnost AI Alerts Dashboard API",
+    "version": "2.1.2"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Dashboard",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Get dashboard metrics",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/dashboard",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get dashboard metrics"
+        },
+        {
+          "info": {
+            "name": "Generate login summary",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.agnost.ai/dashboard/api/login-summary",
+            "params": [
+              {
+                "name": "org_id",
+                "value": "",
+                "type": "query",
+                "description": "Organization ID. Optional when org scope is supplied by JWT/API-key auth or `x-org-id`."
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Generates a fresh 48-hour login summary for the selected organization.\nThe response is not persisted; dashboard clients request it after org\nselection settles, then keep it in memory for the current page session.\nIf no recent data exists, the endpoint returns a generic `summary_text`\nwith an empty `sections` array.\n"
+        },
+        {
+          "info": {
+            "name": "Get user stories (conversations)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/user-stories",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get user stories (conversations)"
+        },
+        {
+          "info": {
+            "name": "Get tool usage statistics",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/tool-stats",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get tool usage statistics"
+        },
+        {
+          "info": {
+            "name": "Get tool checkpoint timing stats",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/tool-checkpoint-stats",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get tool checkpoint timing stats"
+        },
+        {
+          "info": {
+            "name": "Get tool usage time series",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/tool-time-series",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get tool usage time series"
+        },
+        {
+          "info": {
+            "name": "Get error distribution by tool",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/tool-error-distribution",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get error distribution by tool"
+        },
+        {
+          "info": {
+            "name": "Get error events",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/errors",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get error events"
+        },
+        {
+          "info": {
+            "name": "Export errors as CSV",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/errors/export",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Export errors as CSV"
+        },
+        {
+          "info": {
+            "name": "Get raw event logs",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/raw-logs",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get raw event logs"
+        },
+        {
+          "info": {
+            "name": "Export raw logs as CSV",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/raw-logs/export",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Export raw logs as CSV"
+        },
+        {
+          "info": {
+            "name": "Get total count for raw logs query",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/raw-logs/count",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Returns the total event count matching the same filters as `/raw-logs`,\nserved from the `event_daily_stats` materialized view for sub-second\nlatency. The frontend issues this in parallel with `/raw-logs` so the\npage renders immediately and the total fills in when ready.\n\nReturns `{\"total_count\": null}` when the filter set cannot be answered\nby the materialized view (search query, client_config, connection_type,\nor arbitrary metadata keys other than event_type).\n"
+        },
+        {
+          "info": {
+            "name": "Get input/output for a specific event",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/event-io",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get input/output for a specific event"
+        },
+        {
+          "info": {
+            "name": "Get metadata key distribution",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/metadata-distribution",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get metadata key distribution"
+        },
+        {
+          "info": {
+            "name": "Get combined command center data",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/command-center-summary",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Combines metrics, user stories, errors, and tool stats in one call"
+        },
+        {
+          "info": {
+            "name": "Get combined tools dashboard data",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/tools-dashboard",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Combines tool stats, time series, and saved charts"
+        },
+        {
+          "info": {
+            "name": "List saved dashboard charts",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.agnost.ai/dashboard/api/dashboard/charts",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "List saved dashboard charts"
+        },
+        {
+          "info": {
+            "name": "Create dashboard chart",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/dashboard/charts",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Create dashboard chart"
+        },
+        {
+          "info": {
+            "name": "Delete dashboard chart",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.agnost.ai/dashboard/api/dashboard/charts/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Delete dashboard chart"
+        },
+        {
+          "info": {
+            "name": "Reorder dashboard charts",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.agnost.ai/dashboard/api/dashboard/charts/reorder",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Reorder dashboard charts"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

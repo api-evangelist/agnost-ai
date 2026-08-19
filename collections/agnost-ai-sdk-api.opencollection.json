@@ -1,0 +1,60 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Agnost AI Alerts SDK API",
+    "version": "2.1.2"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "SDK",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Capture session",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/api/v1/capture-session",
+            "headers": [
+              {
+                "name": "x-org-id",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Start a session. Call once per conversation; reuse `session_id` on every event."
+        },
+        {
+          "info": {
+            "name": "Capture event",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/api/v1/capture-event",
+            "headers": [
+              {
+                "name": "x-org-id",
+                "value": ""
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Record one turn-pair or tool call. Generate `event_id` client-side so children can reference parents."
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

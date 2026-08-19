@@ -1,0 +1,210 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Agnost AI Alerts Sentiments API",
+    "version": "2.1.2"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Sentiments",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "List sentiment configs",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.agnost.ai/dashboard/api/sentiments",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "List sentiment configs"
+        },
+        {
+          "info": {
+            "name": "Create sentiment (intent) config",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/sentiments",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Create sentiment (intent) config"
+        },
+        {
+          "info": {
+            "name": "Update sentiment config",
+            "type": "http"
+          },
+          "http": {
+            "method": "PUT",
+            "url": "https://api.agnost.ai/dashboard/api/sentiments/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Update sentiment config"
+        },
+        {
+          "info": {
+            "name": "Delete sentiment config",
+            "type": "http"
+          },
+          "http": {
+            "method": "DELETE",
+            "url": "https://api.agnost.ai/dashboard/api/sentiments/:id",
+            "params": [
+              {
+                "name": "id",
+                "value": "",
+                "type": "path"
+              }
+            ],
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Delete sentiment config"
+        },
+        {
+          "info": {
+            "name": "Get sentiment distribution stats",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/sentiment-stats",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get sentiment distribution stats"
+        },
+        {
+          "info": {
+            "name": "Get messages matching an active or suggested intent tag",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/sentiment-messages",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Proactively suggested intents expose up to 20 stored evidence matches before approval. Active and suggested matches honor time_range and metadata filters."
+        },
+        {
+          "info": {
+            "name": "Get timeline for a single sentiment tag",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/sentiment-timeline",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get timeline for a single sentiment tag"
+        },
+        {
+          "info": {
+            "name": "Get timelines for multiple tags (batch)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/sentiment-timelines",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Get timelines for multiple tags (batch)"
+        },
+        {
+          "info": {
+            "name": "List organization sentiment/intent tags",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.agnost.ai/dashboard/api/sentiment-tags",
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "List organization sentiment/intent tags"
+        },
+        {
+          "info": {
+            "name": "LLM summary of an intent distribution",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/summarize-intent-distribution",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Pulls user inputs matching the given intent within the time range and\nproduces a natural-language summary via the LLM.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

@@ -1,0 +1,56 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Agnost AI Alerts Onboarding API",
+    "version": "2.1.2"
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Onboarding",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Stream an LLM-generated product description from a website",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/onboarding/describe-product",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Fetches the user's website (either a URL passed directly or inferred\nfrom a corporate email domain) and streams a 2-3 sentence product\ndescription over Server-Sent Events. Used during organization setup\nso the user does not have to write the description by hand.\n\nReturns 422 if the email domain is a free email provider, the site\ncannot be reached, or extraction yielded too little content. The\nclient should ask the user to describe the product manually in those\ncases.\n\nResponse is `text/event-str"
+        },
+        {
+          "info": {
+            "name": "Suggest 6 intents to track for a given product",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.agnost.ai/dashboard/api/onboarding/suggest-intents",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            },
+            "auth": {
+              "type": "bearer",
+              "token": "{{bearerToken}}"
+            }
+          },
+          "docs": "Given a product description, returns exactly 6 suggested intents\n(title + description pairs) that mix bug reports, frustration signals,\nfeature requests, churn signals, and positive signals. Always includes\ntwo general-purpose intents (\"Bug report\", \"Feature request\") plus\n4 product-specific suggestions. Used during organization setup to\nseed the intent list.\n\n`product_description` is capped at 5000 characters server-side.\n"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}
