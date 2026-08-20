@@ -41,6 +41,17 @@ tags:
 - Agent Analytics
 - Observability
 - OpenTelemetry
+- MCP
+- Conversational AI
+- Monitoring
+- Developer Tools
+- Analytics
+tags_raw:
+- Company
+- AI Agents
+- Agent Analytics
+- Observability
+- OpenTelemetry
 - Model Context Protocol
 - Conversational AI
 - Monitoring
@@ -69,6 +80,8 @@ apis:
   humanURL: https://docs.agnost.ai
   baseURL: https://api.agnost.ai
   tags:
+  - APIKeys
+  tags_raw:
   - API Keys
   properties:
   - type: OpenAPI
@@ -85,6 +98,8 @@ apis:
   humanURL: https://docs.agnost.ai
   baseURL: https://api.agnost.ai
   tags:
+  - Authentication
+  tags_raw:
   - Auth
   properties:
   - type: OpenAPI
@@ -197,6 +212,8 @@ apis:
   humanURL: https://docs.agnost.ai
   baseURL: https://api.agnost.ai
   tags:
+  - Organization
+  tags_raw:
   - Organizations
   properties:
   - type: OpenAPI
