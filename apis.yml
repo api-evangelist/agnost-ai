@@ -303,6 +303,8 @@ apis:
   - type: ErrorCatalog
     url: https://docs.agnost.ai/errors
 common:
+- type: Website
+  url: https://www.agnost.ai/
 - type: Overlay
   url: overlays/agnost-ai-openapi-overlay.yaml
 - url: https://docs.agnost.ai
