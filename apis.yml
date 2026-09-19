@@ -49,6 +49,9 @@ image: https://agnost.ai/logo.png
 specificationVersion: '0.23'
 created: '2026-07-17'
 modified: '2026-07-18'
+x-docs-platform: mintlify
+x-docs-platform-confidence: medium
+x-docs-platform-checked: 2026-09-17
 tags:
 - Company
 - AI Agents
@@ -194,6 +197,8 @@ apis:
   humanURL: https://docs.agnost.ai
   baseURL: https://api.agnost.ai
   tags:
+  - Dashboards
+  tags_raw:
   - Dashboard
   properties:
   - type: OpenAPI
