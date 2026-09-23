@@ -1,6 +1,6 @@
-openapi: 3.0.3
+openapi: 3.2.0
 info:
-  title: Agnost AI Alerts Onboarding API
+  title: Agnost AI Onboarding API
   description: 'Complete REST API for Agnost AI: an analytics and monitoring platform for AI agents.
 
 
@@ -8,11 +8,9 @@ info:
 
     - SDK ingestion endpoints (`/api/v1/*`) use `x-org-id` header (UUID)
 
-    - Dashboard endpoints use `Authorization: Bearer <jwt>` + `x-org-id` header, or `x-api-key` header
+    - Dashboard endpoints use `Authorization: Bearer ` + `x-org-id` header, or `x-api-key` header
 
-    - API key management uses JWT only (no API key auth)
-
-    '
+    - API key management uses JWT only (no API key auth)'
   version: 2.1.2
   contact:
     name: Agnost AI
@@ -51,9 +49,7 @@ paths:
 
         `{"text": "..."}` for incremental tokens, `{"error": "..."}` for
 
-        terminal failure. The stream ends with a `[DONE]` sentinel.
-
-        '
+        terminal failure. The stream ends with a `[DONE]` sentinel.'
       operationId: onboardingDescribeProduct
       security:
       - BearerAuth: []
@@ -99,9 +95,7 @@ paths:
         seed the intent list.
 
 
-        `product_description` is capped at 5000 characters server-side.
-
-        '
+        `product_description` is capped at 5000 characters server-side.'
       operationId: onboardingSuggestIntents
       security:
       - BearerAuth: []

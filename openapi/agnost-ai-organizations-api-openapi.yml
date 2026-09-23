@@ -1,6 +1,6 @@
-openapi: 3.0.3
+openapi: 3.2.0
 info:
-  title: Agnost AI Alerts Organizations API
+  title: Agnost AI Organizations API
   description: 'Complete REST API for Agnost AI: an analytics and monitoring platform for AI agents.
 
 
@@ -8,11 +8,9 @@ info:
 
     - SDK ingestion endpoints (`/api/v1/*`) use `x-org-id` header (UUID)
 
-    - Dashboard endpoints use `Authorization: Bearer <jwt>` + `x-org-id` header, or `x-api-key` header
+    - Dashboard endpoints use `Authorization: Bearer ` + `x-org-id` header, or `x-api-key` header
 
-    - API key management uses JWT only (no API key auth)
-
-    '
+    - API key management uses JWT only (no API key auth)'
   version: 2.1.2
   contact:
     name: Agnost AI
@@ -132,9 +130,7 @@ paths:
 
         Used by the dashboard UI to render a user-friendly org identifier
 
-        without exposing the internal UUID.
-
-        '
+        without exposing the internal UUID.'
       operationId: getOrgDisplayID
       security:
       - BearerAuth: []
@@ -277,6 +273,19 @@ paths:
         '200':
           description: Conversation keys updated
 components:
+  responses:
+    Unauthorized:
+      description: Missing or invalid authentication
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: Invalid request body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   schemas:
     Organization:
       type: object
@@ -300,19 +309,6 @@ components:
       - error
       example:
         error: Invalid request body
-  responses:
-    BadRequest:
-      description: Invalid request body
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    Unauthorized:
-      description: Missing or invalid authentication
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
   securitySchemes:
     OrgId:
       type: apiKey

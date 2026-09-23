@@ -1,6 +1,6 @@
-openapi: 3.0.3
+openapi: 3.2.0
 info:
-  title: Agnost AI Alerts SOPs API
+  title: Agnost AI SO Ps API
   description: 'Complete REST API for Agnost AI: an analytics and monitoring platform for AI agents.
 
 
@@ -8,11 +8,9 @@ info:
 
     - SDK ingestion endpoints (`/api/v1/*`) use `x-org-id` header (UUID)
 
-    - Dashboard endpoints use `Authorization: Bearer <jwt>` + `x-org-id` header, or `x-api-key` header
+    - Dashboard endpoints use `Authorization: Bearer ` + `x-org-id` header, or `x-api-key` header
 
-    - API key management uses JWT only (no API key auth)
-
-    '
+    - API key management uses JWT only (no API key auth)'
   version: 2.1.2
   contact:
     name: Agnost AI
@@ -146,9 +144,7 @@ paths:
       summary: Get SOP violation distribution stats
       description: 'Mirrors `/sentiment-stats`. Returns total analyzed events, total events
 
-        in the time range, top violating SOPs, and the full SOP distribution.
-
-        '
+        in the time range, top violating SOPs, and the full SOP distribution.'
       operationId: getSOPStats
       security:
       - BearerAuth: []
@@ -169,9 +165,7 @@ paths:
       summary: Get assistant messages matching a specific SOP violation
       description: 'Mirrors `/sentiment-messages`, but matches on the assistant output rather
 
-        than the user input. The `tag` field is the SOP title to filter on.
-
-        '
+        than the user input. The `tag` field is the SOP title to filter on.'
       operationId: getMessagesBySOP
       security:
       - BearerAuth: []
@@ -263,9 +257,7 @@ paths:
 
         range and produces a natural-language summary via the LLM. Mirrors
 
-        `/summarize-intent-distribution`.
-
-        '
+        `/summarize-intent-distribution`.'
       operationId: summarizeSOPDistribution
       security:
       - BearerAuth: []
@@ -299,6 +291,28 @@ paths:
                     type: string
 components:
   schemas:
+    TimeRange:
+      type: string
+      enum:
+      - 1min
+      - 1h
+      - 1d
+      - 1w
+      - 1m
+      - all
+      default: 1w
+    SOPConfig:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        active:
+          type: boolean
     QueryFilters:
       type: object
       properties:
@@ -331,28 +345,6 @@ components:
         page_size:
           type: integer
           default: 20
-    TimeRange:
-      type: string
-      enum:
-      - 1min
-      - 1h
-      - 1d
-      - 1w
-      - 1m
-      - all
-      default: 1w
-    SOPConfig:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        title:
-          type: string
-        description:
-          type: string
-        active:
-          type: boolean
   securitySchemes:
     OrgId:
       type: apiKey
