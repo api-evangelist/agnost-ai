@@ -530,19 +530,28 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-    ServerError:
-      description: Internal server error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
     Forbidden:
       description: No access to the requested organization
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+    ServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+      - error
+      example:
+        error: Invalid request body
     TimeRange:
       type: string
       enum:
@@ -553,15 +562,6 @@ components:
       - 1m
       - all
       default: 1w
-    Error:
-      type: object
-      properties:
-        error:
-          type: string
-      required:
-      - error
-      example:
-        error: Invalid request body
     QueryFilters:
       type: object
       properties:

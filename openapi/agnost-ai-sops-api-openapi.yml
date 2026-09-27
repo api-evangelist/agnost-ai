@@ -1,6 +1,6 @@
 openapi: 3.2.0
 info:
-  title: Agnost AI SO Ps API
+  title: Agnost AI SOPs API
   description: 'Complete REST API for Agnost AI: an analytics and monitoring platform for AI agents.
 
 
@@ -301,18 +301,6 @@ components:
       - 1m
       - all
       default: 1w
-    SOPConfig:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        title:
-          type: string
-        description:
-          type: string
-        active:
-          type: boolean
     QueryFilters:
       type: object
       properties:
@@ -345,6 +333,18 @@ components:
         page_size:
           type: integer
           default: 20
+    SOPConfig:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        active:
+          type: boolean
   securitySchemes:
     OrgId:
       type: apiKey
