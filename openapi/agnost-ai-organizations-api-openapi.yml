@@ -274,14 +274,14 @@ paths:
           description: Conversation keys updated
 components:
   responses:
-    BadRequest:
-      description: Invalid request body
+    Unauthorized:
+      description: Missing or invalid authentication
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-    Unauthorized:
-      description: Missing or invalid authentication
+    BadRequest:
+      description: Invalid request body
       content:
         application/json:
           schema:
