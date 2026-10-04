@@ -523,7 +523,35 @@ paths:
         '200':
           description: Charts reordered
 components:
+  responses:
+    ServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: No access to the requested organization
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: Invalid request body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+      - error
+      example:
+        error: Invalid request body
     TimeRange:
       type: string
       enum:
@@ -566,34 +594,6 @@ components:
         page_size:
           type: integer
           default: 20
-    Error:
-      type: object
-      properties:
-        error:
-          type: string
-      required:
-      - error
-      example:
-        error: Invalid request body
-  responses:
-    Forbidden:
-      description: No access to the requested organization
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    ServerError:
-      description: Internal server error
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    BadRequest:
-      description: Invalid request body
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
   securitySchemes:
     OrgId:
       type: apiKey

@@ -285,16 +285,18 @@ paths:
                     type: string
 components:
   schemas:
-    TimeRange:
-      type: string
-      enum:
-      - 1min
-      - 1h
-      - 1d
-      - 1w
-      - 1m
-      - all
-      default: 1w
+    SentimentConfig:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        active:
+          type: boolean
     QueryFilters:
       type: object
       properties:
@@ -327,18 +329,16 @@ components:
         page_size:
           type: integer
           default: 20
-    SentimentConfig:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        title:
-          type: string
-        description:
-          type: string
-        active:
-          type: boolean
+    TimeRange:
+      type: string
+      enum:
+      - 1min
+      - 1h
+      - 1d
+      - 1w
+      - 1m
+      - all
+      default: 1w
   securitySchemes:
     OrgId:
       type: apiKey

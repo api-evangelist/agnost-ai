@@ -190,16 +190,6 @@ paths:
           description: Keyword extraction results
 components:
   schemas:
-    TimeRange:
-      type: string
-      enum:
-      - 1min
-      - 1h
-      - 1d
-      - 1w
-      - 1m
-      - all
-      default: 1w
     QueryFilters:
       type: object
       properties:
@@ -232,6 +222,16 @@ components:
         page_size:
           type: integer
           default: 20
+    TimeRange:
+      type: string
+      enum:
+      - 1min
+      - 1h
+      - 1d
+      - 1w
+      - 1m
+      - all
+      default: 1w
   securitySchemes:
     OrgId:
       type: apiKey
