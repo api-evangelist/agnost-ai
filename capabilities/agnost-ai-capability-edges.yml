@@ -1,0 +1,39 @@
+slug: agnost-ai
+provider: Agnost AI
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Software & Technology
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 2
+edges:
+- tag: SDK
+  spec_file: agnost-ai-sdk-api-openapi.yml
+  capability_id: BC-4280.10
+  capability_id_l1: BC-4280
+  capability_name: Product Telemetry Instrumentation
+  confidence: 0.75
+  evidence: POST /api/v1/capture-session  captureSession  Capture session; POST /api/v1/capture-event  captureEvent  Capture
+    event — "SDK ingestion endpoints"
+  reason: 'The SDK tag is the ingestion surface: two endpoints that capture sessions and events from the
+    customer''s running AI agent into the analytics platform. That is instrumentation/capture of product
+    usage events from client and server runtimes, i.e. Product Telemetry Instrumentation. Not an auth/plumbing
+    tag despite the generic ''SDK'' name, since the operations are event capture rather than SDK/client-library
+    stewardship.'
+- tag: Billing
+  spec_file: agnost-ai-billing-api-openapi.yml
+  capability_id: BC-4250
+  capability_id_l1: BC-4250
+  capability_name: Subscription Billing & Revenue Management
+  confidence: 0.7
+  evidence: POST /dashboard/api/billing/create-checkout  createCheckoutSession  Create Stripe checkout
+    session; POST /dashboard/api/billing/cancel  cancelSubscription  Cancel subscription
+  reason: 'Subscription billing surface: Stripe checkout, billing portal and subscription cancellation
+    for the SaaS product. L1 subscription billing is clear; the three operations straddle payment collection
+    and cancellation so no single L2 is named.'

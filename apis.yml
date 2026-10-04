@@ -308,6 +308,9 @@ apis:
   - type: ErrorCatalog
     url: https://docs.agnost.ai/errors
 common:
+- type: CapabilityMap
+  url: capabilities/agnost-ai-capability-edges.yml
+  name: Agnost AI Business Capability Map
 - type: Website
   url: https://www.agnost.ai/
 - type: Overlay
