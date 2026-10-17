@@ -273,29 +273,7 @@ paths:
         '200':
           description: Conversation keys updated
 components:
-  responses:
-    BadRequest:
-      description: Invalid request body
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    Unauthorized:
-      description: Missing or invalid authentication
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
   schemas:
-    Error:
-      type: object
-      properties:
-        error:
-          type: string
-      required:
-      - error
-      example:
-        error: Invalid request body
     Organization:
       type: object
       properties:
@@ -309,6 +287,28 @@ components:
         created_at:
           type: string
           format: date-time
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+      - error
+      example:
+        error: Invalid request body
+  responses:
+    Unauthorized:
+      description: Missing or invalid authentication
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: Invalid request body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   securitySchemes:
     OrgId:
       type: apiKey

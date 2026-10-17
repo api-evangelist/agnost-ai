@@ -285,18 +285,6 @@ paths:
                     type: string
 components:
   schemas:
-    SentimentConfig:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        title:
-          type: string
-        description:
-          type: string
-        active:
-          type: boolean
     QueryFilters:
       type: object
       properties:
@@ -339,6 +327,18 @@ components:
       - 1m
       - all
       default: 1w
+    SentimentConfig:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        active:
+          type: boolean
   securitySchemes:
     OrgId:
       type: apiKey
