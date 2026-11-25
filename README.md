@@ -122,21 +122,40 @@ Postman and Open Collection request collections.
 
 OpenAPI overlays, including conversational phrasing for each operation.
 
-- [Agnost Ai Openapi Overlay](https://apis.io/overlays/agnost-ai/agnost-ai-openapi-overlay/)
+- [Agnost AI Openapi Overlay](https://apis.io/overlays/agnost-ai/agnost-ai-openapi-overlay/)
+
+#### Governance rules (1)
+
+Spectral rulesets for the provider's contracts.
+
+- [Agnost AI API Rules](https://apis.io/rules/agnost-ai/agnost-ai-rules/)
 
 #### Security (3)
 
 Authentication, trust centre, and vulnerability disclosure.
 
-- [Agnost Ai Authentication](https://apis.io/security/agnost-ai/agnost-ai-authentication/)
-- [Agnost Ai Domain Security](https://apis.io/security/agnost-ai/agnost-ai-domain-security/)
-- [Agnost Ai Trust Center](https://apis.io/security/agnost-ai/agnost-ai-trust-center/)
+- [Agnost AI Authentication](https://apis.io/security/agnost-ai/agnost-ai-authentication/)
+- [Agnost AI Domain Security](https://apis.io/security/agnost-ai/agnost-ai-domain-security/)
+- [Agnost AI Trust Center](https://apis.io/security/agnost-ai/agnost-ai-trust-center/)
 
 #### OAuth scopes (1)
 
 The permissions the API asks for.
 
-- [Agnost Ai Scopes](https://apis.io/scopes/agnost-ai/agnost-ai-scopes/)
+- [Agnost AI Scopes](https://apis.io/scopes/agnost-ai/agnost-ai-scopes/)
+
+#### Plans and pricing (2)
+
+Published plans, tiers and prices.
+
+- [Agnost AI Plans Pricing](https://apis.io/plans/agnost-ai/agnost-ai-plans-pricing/)
+- [Agnost AI Price Estimates](https://apis.io/plans/agnost-ai/agnost-ai-price-estimates/)
+
+#### FinOps (1)
+
+What the API costs to run, by operation.
+
+- [Agnost AI Finops](https://apis.io/finops/agnost-ai/agnost-ai-finops/)
 
 ## Where to find this API
 
@@ -157,18 +176,18 @@ Links to the company's own pages. This repository publishes no copy of their spe
 
 ## API Evangelist rating
 
-**Kin Score 49.6** — developing · rubric 0.25.0 · scored 2026-10-23
+**Kin Score 58.3** — strong · rubric 0.28.1 · scored 2026-11-21
 
 | Facet | Score |
 |---|---|
 | Discoverability | 75.0 |
-| Contract quality | 45.5 |
-| Contract governance | 18.2 |
-| Operational transparency | 26.3 |
+| Contract quality | 50.5 |
+| Contract governance | 31.8 |
+| Operational transparency | 23.8 |
 | Developer ergonomics | 66.1 |
-| Access clarity | 50.0 |
+| Access clarity | 85.1 |
 
-**Agent readiness 47.7** — agent-ready (gated down from agent-native)
+**Agent readiness 50.8** — agent-ready (gated down from agent-native)
 
 | Agent-readiness dimension | Result |
 |---|---|
@@ -178,13 +197,13 @@ Links to the company's own pages. This repository publishes no copy of their spe
 | MCP Server | verified |
 | Auth Clarity | served (partial credit) |
 | Idempotency | — |
-| Error Semantics | documented (partial credit) |
+| Error Semantics | verified |
 | OpenAPI Examples | partial |
 | Rate Limit Signal | — |
 | Event Surface Described | — |
 | Agent Skills | derived (partial credit) |
 | Well Known Catalog | — |
-| Consent Identity | — |
+| Consent Identity | signal |
 | Agent Card | — |
 | Dry Run Mode | — |
 | Delegated Identity | served (partial credit) |
@@ -193,8 +212,12 @@ Links to the company's own pages. This repository publishes no copy of their spe
 | Agentic Commerce | — |
 | Pagination Ratio | — |
 | Operation Distinctiveness | distinct |
+| MCP Tool Quality | na |
+| Onboarding Descriptor | — |
+| Dns Aid Index | na |
+| Markdown Negotiation | yes |
 
-**Regulatory alignment 35.3** — AI & Biometrics
+**Regulatory alignment 29.4** — AI & Biometrics
 
 The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/agnost-ai/](https://apis.io/providers/agnost-ai/).
 
